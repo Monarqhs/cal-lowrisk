@@ -29,7 +29,7 @@ Supporting reference data (food/exercise catalogs, etc.) lives in [`04-data/`](.
 - [`deployment.md`](./02-system/deployment.md) — Environments & deployment (Neon, two projects) ✅
 
 ### 03 — UX
-- `user-flows.md` — User journeys & flows *(later)*
+- [`user-flows.md`](./03-ux/user-flows.md) — User journeys, sitemap, screen inventory, low-fi wireframes ✅
 
 ### 04 — Data
 - Catalog data (food, exercise) — CSV or links to spreadsheets *(later)*
