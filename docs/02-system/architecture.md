@@ -11,7 +11,8 @@
 | **Last updated** | 2026-10-08 |
 
 > **Process note:** This document is the **architecture** half of the SA phase; the
-> **data** half is [`erd.md`](./erd.md). Both derive from the BRD
+> **data** half is [`erd.md`](./erd.md), and environments/deployment are in
+> [`deployment.md`](./deployment.md). All three derive from the BRD
 > (`docs/01-business/brd.md`). It records *how the system is structured and why* — the
 > decisions a developer needs before writing code. It restates and expands the decisions
 > in steering `product.md` and the `add-module` skill; where they overlap, those remain
