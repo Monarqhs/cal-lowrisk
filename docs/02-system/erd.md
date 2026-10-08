@@ -50,8 +50,22 @@ roles are additive without code changes.
 
 ## 2. Conventions
 
-- **Primary keys:** `BIGINT GENERATED ALWAYS AS IDENTITY` (surrogate `id`). (UUID is an
-  option if we later distribute; integers are simpler and cheaper for a monolith MVP.)
+- **Primary keys:** native PostgreSQL **`uuid`** on **every** table (surrogate `id`), with
+  **UUIDv7** values **generated in the application (Go)** — not `bigint`, and not `varchar`.
+  Rationale:
+  - **Native `uuid` (16 bytes)**, not `varchar` — half the storage of a 36-char string,
+    with format validation and faster comparison/indexing (matters on free-tier).
+  - **UUIDv7 is time-ordered**, so inserts stay roughly sequential and avoid the index
+    fragmentation that random UUIDv4 causes — this is why UUID is safe even on the
+    high-insert log tables (`nutrition_log`, `workout_log`).
+  - **Not guessable / not enumerable** — IDs appear in URLs/APIs (incl. users' own log
+    IDs for edit/delete, NUT-6/WRK-4), so non-sequential IDs protect private data.
+  - **App-generated** (Go `uuid.NewV7()`) fits the microservice extraction path: no
+    dependence on a DB sequence; globally unique across future services.
+  - **Consistency:** all PKs and FKs are the same type, so the shared base model
+    (`id`, timestamps) stays uniform across every module (per the `add-module` skill).
+  - **Seed note:** seeded rows (e.g. `role` = user/admin) use **fixed, hardcoded UUIDs**
+    in the seed migration so FKs (`users.role_id`) can reference known values.
 - **Shared base columns** on every table (matches the `add-module` base model):
   `created_at TIMESTAMPTZ NOT NULL DEFAULT now()`, `updated_at TIMESTAMPTZ NOT NULL DEFAULT now()`,
   and `deleted_at TIMESTAMPTZ NULL` for **soft delete** where applicable.
@@ -91,7 +105,7 @@ erDiagram
     EXERCISE ||--o{ WORKOUT_LOG : "referenced by"
 
     ROLE {
-        bigint id PK
+        uuid id PK
         varchar name UK "user | admin"
         varchar description
         timestamptz created_at
@@ -99,18 +113,18 @@ erDiagram
     }
 
     USERS {
-        bigint id PK
+        uuid id PK
         varchar email UK
         varchar password_hash
-        bigint role_id FK
+        uuid role_id FK
         timestamptz created_at
         timestamptz updated_at
         timestamptz deleted_at "soft delete = deactivated"
     }
 
     USER_PROFILE {
-        bigint id PK
-        bigint user_id FK "UNIQUE (1:1)"
+        uuid id PK
+        uuid user_id FK "UNIQUE (1:1)"
         numeric weight_kg
         numeric height_cm
         int age
@@ -122,10 +136,10 @@ erDiagram
     }
 
     FOOD {
-        bigint id PK
+        uuid id PK
         varchar name
         varchar source "CHECK catalog|custom"
-        bigint owner_user_id FK "NULL=catalog, set=private"
+        uuid owner_user_id FK "NULL=catalog, set=private"
         numeric calories_per_100g
         numeric protein_per_100g "nullable for custom"
         numeric carbs_per_100g "nullable for custom"
@@ -136,8 +150,8 @@ erDiagram
     }
 
     FOOD_SERVING {
-        bigint id PK
-        bigint food_id FK
+        uuid id PK
+        uuid food_id FK
         varchar label "e.g. 1 centong, 1 potong"
         numeric grams "weight this serving maps to"
         timestamptz created_at
@@ -145,13 +159,13 @@ erDiagram
     }
 
     NUTRITION_LOG {
-        bigint id PK
-        bigint user_id FK
-        bigint food_id FK
+        uuid id PK
+        uuid user_id FK
+        uuid food_id FK
         date log_date
         varchar meal_type "CHECK breakfast|lunch|dinner|snack"
         numeric grams "resolved portion in grams"
-        bigint food_serving_id FK "nullable; which serving was picked"
+        uuid food_serving_id FK "nullable; which serving was picked"
         numeric servings_count "nullable; qty of that serving"
         timestamptz created_at
         timestamptz updated_at
@@ -159,7 +173,7 @@ erDiagram
     }
 
     EXERCISE {
-        bigint id PK
+        uuid id PK
         varchar name
         varchar unit_type "CHECK reps|duration|distance_steps"
         numeric met_value "metabolic equivalent"
@@ -170,9 +184,9 @@ erDiagram
     }
 
     WORKOUT_LOG {
-        bigint id PK
-        bigint user_id FK
-        bigint exercise_id FK
+        uuid id PK
+        uuid user_id FK
+        uuid exercise_id FK
         date log_date
         numeric amount "reps | minutes | steps per unit_type"
         numeric calories_burned "computed & stored snapshot"
@@ -303,8 +317,9 @@ computation (no-op in MVP; Redis/Upstash later) — a **code** concern, no schem
 
 ## 7. Open items for review
 
-1. **PK type:** integer identity (current choice) vs UUID. Integers chosen for MVP
-   simplicity; revisit only if we distribute.
+1. **PK type:** ✅ resolved — native `uuid` on all tables, app-generated **UUIDv7** (Go).
+   Chosen for non-enumerable IDs, consistent FK types, and the extraction path; UUIDv7's
+   time-ordering keeps log inserts index-friendly. (See §2.)
 2. **Target snapshot:** add `bmr`/`tdee`/`target_calories` to `user_profile` later if we
    want historical summaries immune to profile edits. Deferred.
 3. **`unit_to_minutes` for `reps`:** reps→minutes is a coarse approximation. Acceptable for
