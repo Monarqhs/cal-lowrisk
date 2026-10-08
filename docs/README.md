@@ -21,11 +21,11 @@ Supporting reference data (food/exercise catalogs, etc.) lives in [`04-data/`](.
 ## Index
 
 ### 01 — Business
-- `brd.md` — Business Requirements Document *(coming next)*
+- [`brd.md`](./01-business/brd.md) — Business Requirements Document ✅
 
 ### 02 — System
-- `erd.md` — Entity Relationship Diagram (Mermaid) *(after BRD)*
-- `architecture.md` — Architecture decisions (modular monolith, layering) *(after BRD)*
+- `erd.md` — Entity Relationship Diagram (Mermaid) *(next)*
+- `architecture.md` — Architecture decisions (modular monolith, layering) *(next)*
 
 ### 03 — UX
 - `user-flows.md` — User journeys & flows *(later)*
