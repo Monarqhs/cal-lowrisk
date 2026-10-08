@@ -166,19 +166,17 @@ Rules (carried from the `add-module` skill + migration best practice):
 
 ---
 
-## 6. Deploy targets (indicative, free-tier)
+## 6. Deploy targets (free-tier)
 
-Backend hosting isn't finalized; candidates that fit free-tier for a single Go service:
-
-| Component | Candidate host | Env mapping |
+| Component | Host | Env mapping |
 |---|---|---|
-| Go backend | A free-tier container/app host (TBD during Dev) | Two services (or one service, two configs) → UAT / PROD |
+| Go backend | **Render** (free) | **Two services** → UAT / PROD (see §8.1) |
 | Next.js admin | **Vercel** (free) | preview → UAT, production → PROD |
 | Flutter app | Built artifacts (store/side-load) | flavor uat / prod |
 | Database | **Neon** | `cal-lowrisk-uat` / `cal-lowrisk-prod` |
 
-> The backend host is deliberately left open (an §8 decision). The design keeps it
-> host-agnostic: anything that runs a Go binary with env vars works.
+> The design stays host-agnostic — anything that runs a Go binary with env vars works — so
+> a future host swap (e.g. to Fly.io for Singapore-region latency) is config, not code.
 
 ---
 
@@ -198,15 +196,58 @@ enterprise setups):
 
 ---
 
-## 8. Open items for review
+## 8. Decisions (resolved)
 
-1. **Backend host:** which free-tier host runs the Go service (and whether UAT+PROD are
-   two services or one service with two configs). Needs a short spike in the Dev phase.
-2. **PROD promotion trigger:** git tag vs manual workflow dispatch vs environment approval.
-3. **Cold-start tolerance:** acceptable first-request latency after Neon auto-suspend; do
-   we add a lightweight keep-warm ping on PROD (mindful of the 100 CU-hour budget)?
-4. **Local dev DB:** own throwaway Neon project per developer vs sharing UAT.
-5. **Seed data for UAT:** scope of seeded catalog/test accounts for UAT validation.
+These were open items; now decided for the free-tier flow. Rationale is kept so the Dev
+phase understands *why*.
+
+### 8.1 Backend host — **Render, two services (UAT + PROD)**
+One service per environment, mirroring the two-Neon-project isolation. Render chosen for
+the simplest DX (connect repo → deploy), so effort goes into learning the code, not ops.
+- **Consequence (cold start):** Render Free spins a service down after ~15 min idle, and
+  Neon suspends after 5 min — so the **first request after idle is slow** (potentially
+  ~20–40 s combined). Accepted for a learning MVP (see 8.3).
+- **Config:** each Render service gets its own env vars/secrets per §4 (UAT values vs PROD
+  values); same image/code, different config.
+- **Revisit later:** if latency for Indonesian users or cold start becomes a real problem,
+  re-evaluate a region-closer host (e.g. Fly.io, Singapore) or a paid tier — a host swap,
+  not a code change.
+
+### 8.2 PROD promotion trigger — **manual now, git tag later**
+Merging to `main` auto-deploys **UAT**. **PROD** is promoted by a **manually-triggered
+workflow** (GitHub Actions `workflow_dispatch`) — full control, zero overhead for a solo
+team. **Later**, move to **git tags** (e.g. `v1.0.0`) so PROD releases are versioned and
+line up with migration version numbers. Environment-approval gates are skipped for now
+(little value when the approver is the same person).
+
+### 8.3 Cold start — **accept it; NO keep-warm**
+We deliberately do **not** add a keep-warm ping. On Neon's Free plan a keep-warm would
+keep the DB from suspending and **burn the 100 CU-hour budget**, which could get PROD
+suspended at month-end — counterproductive. Scale-to-zero is a *feature* at this tier.
+- **Mitigation is client-side, not compute-side:** set sensible DB connect-timeout +
+  retry so a cold start reads as a brief "loading", not an error; clients show a loading
+  state on first request.
+- **Revisit:** only if PROD gets real users and cold start becomes a genuine issue —
+  then consider a paid tier, not a keep-warm hack.
+
+### 8.4 Local dev DB — **local PostgreSQL (Docker)**
+Day-to-day development runs against a **local Postgres in Docker**: free, fast, offline,
+and it never touches the Neon budget. Our migrations (golang-migrate, plain Postgres) run
+identically locally and on Neon. **UAT is not used as a dev DB** — that would blur the
+dev/test boundary and make UAT unreliable for pre-PROD validation.
+
+### 8.5 Seed data — **two layers**
+1. **Structural/master seed via migrations** (idempotent, `ON CONFLICT DO NOTHING`):
+   roles + a base Indonesian-oriented `food`/`exercise` catalog. This is **shared by UAT
+   and PROD** — the catalog is reference data PROD needs too. Seeded rows use fixed
+   hardcoded UUIDs (see `erd.md` §2).
+2. **UAT-only test seed via a separate script** (e.g. `scripts/seed-uat.*`), NOT a
+   migration: test user + admin accounts and a few sample meal/workout logs, so it can
+   **never leak into PROD**. Scope kept small — enough to validate the daily/weekly/monthly
+   summaries meaningfully.
+
+> **Never clone PROD data into UAT** — it would violate the privacy boundary (§4.1 / ADM-6;
+> admins must not see users' private logs), and PROD has no data to clone anyway.
 
 ---
 
