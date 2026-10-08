@@ -25,7 +25,7 @@ Supporting reference data (food/exercise catalogs, etc.) lives in [`04-data/`](.
 
 ### 02 — System
 - [`erd.md`](./02-system/erd.md) — Entity Relationship Diagram (Mermaid) ✅
-- `architecture.md` — Architecture decisions (modular monolith, layering) *(next)*
+- [`architecture.md`](./02-system/architecture.md) — Architecture decisions (modular monolith, layering) ✅
 
 ### 03 — UX
 - `user-flows.md` — User journeys & flows *(later)*
