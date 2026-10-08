@@ -24,7 +24,7 @@ Supporting reference data (food/exercise catalogs, etc.) lives in [`04-data/`](.
 - [`brd.md`](./01-business/brd.md) — Business Requirements Document ✅
 
 ### 02 — System
-- `erd.md` — Entity Relationship Diagram (Mermaid) *(next)*
+- [`erd.md`](./02-system/erd.md) — Entity Relationship Diagram (Mermaid) ✅
 - `architecture.md` — Architecture decisions (modular monolith, layering) *(next)*
 
 ### 03 — UX
