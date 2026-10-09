@@ -29,9 +29,10 @@ weight), including a **macronutrient** (protein / carbs / fat) breakdown.
 | Backend | **Go** (Gin + GORM) |
 | Mobile (user app) | **Flutter** |
 | Web admin | **Next.js** |
-| Database | **PostgreSQL** (free tier: Neon or Supabase) |
-| Architecture | **Modular monolith**, module-first |
-| Migrations | **golang-migrate** (SQL versioned, Flyway-style) — see skill `add-module` |
+| Database | **PostgreSQL** — **Neon** (free tier, AWS Singapore region) |
+| Architecture | **Modular monolith**, module-first, in a **monorepo** (`apps/`) |
+| Migrations | **golang-migrate** (SQL versioned, per-module) — see skill `add-module` |
+| Mobile UI source | **Figma** (via Figma Power) — design-to-code into Flutter |
 
 ### Key tech decisions & rationale
 - **Modular monolith, not microservices** — cheap (one deploy, free-tier friendly),
@@ -50,6 +51,26 @@ weight), including a **macronutrient** (protein / carbs / fat) breakdown.
   possible later add for push notifications.
 - **Redis:** deferred. The `summary` module is designed with a `Cache` interface so Redis
   (e.g. Upstash free tier) can be added later without redesign.
+- **Monorepo layout:** one repo, apps separated — `apps/backend/` (Go modular monolith,
+  one `go.mod`/binary/deploy), `apps/mobile/` (Flutter, later), `apps/admin/` (Next.js,
+  later). Separating apps is NOT microservices; the backend stays a single monolith with
+  modules in `internal/modules/`.
+- **Primary keys:** native PostgreSQL `uuid` on every table, app-generated **UUIDv7**
+  (Go `uuid.NewV7()` via `google/uuid` v1.6+). Not bigint, not varchar. Seeded rows use
+  fixed hardcoded UUIDs. (Also saved as a global learning.) See `docs/02-system/erd.md` §2.
+- **Enum-like values** (sex, activity_level, goal, meal_type, food.source,
+  exercise.unit_type) use **CHECK constraints**; only `role` is a seeded table.
+- **Environments:** two **separate Neon projects** — `cal-lowrisk-uat` and
+  `cal-lowrisk-prod` (compute quota is per-project → isolated budgets). Backend hosted on
+  **Render** (two services). One codebase, config differs per env. Migrations use the
+  **direct** (non-pooled) conn; app runtime uses the **pooled** (`-pooler`) conn with a
+  small pool. PROD promotion is manual (`workflow_dispatch`) now, git tags later. No
+  keep-warm (would burn Neon's free CU-hours). Local dev DB: Postgres via Docker — but in
+  the Kiro sandbox we use Neon directly. See `docs/02-system/deployment.md`.
+- **Visual design direction:** warm, clean, calm; hero number on Home; color-coded macros
+  (protein=blue, carbs=green, fat=amber). Tokens: font **Inter** (NOT SF Pro), primary
+  orange **#FF6B3D**, 4px spacing scale, soft radii, **Lucide** icons (MIT). Mobile nav =
+  bottom tab bar + center FAB. See `docs/03-ux/user-flows.md` §11.
 
 ## Modules (bounded contexts)
 
@@ -90,19 +111,57 @@ manages *accounts* (activate/deactivate) and sees *aggregate* stats only — adm
 every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`.
 
 ### Progress so far
-- ✅ Repo created; docs structure + root README + `.gitignore` (PR #1, merged).
-- ✅ **BRD** written: `docs/01-business/brd.md` (PR #2).
-- 🔜 **Next: ERD + architecture** in `docs/02-system/` (SA phase). The BRD §10 lists 5
-  open questions to resolve during ERD:
-  1. Food portion basis (per serving vs per 100 g).
-  2. Custom food persistence (intent: reusable personal foods).
-  3. Summary computation: on-the-fly vs precomputed; where the cache boundary sits.
-  4. Calorie-burn estimation per exercise unit type (reps/duration/steps); body weight?
-  5. Daily target formula (BMR/TDEE variant + activity multipliers).
+- ✅ **BA:** repo + docs structure + root README (PR #1); **BRD** `docs/01-business/brd.md` (PR #2).
+- ✅ **SA:** `docs/02-system/` complete — `erd.md` (data model, UUIDv7, 5 BRD open
+  questions resolved), `architecture.md` (modular monolith, layering, privacy boundary),
+  `deployment.md` (two Neon projects, Render, migration promotion). (PRs #4–#8.)
+  - The 5 BRD §10 questions are RESOLVED (see erd.md §1): per-100g + optional serving;
+    reusable custom food (one `food` table, `source`+`owner_user_id`); summary computed
+    on-the-fly (no table) behind a Cache interface; MET + body weight for burn;
+    Mifflin-St Jeor → TDEE → goal for target, computed on-the-fly.
+- ✅ **UX:** `docs/03-ux/user-flows.md` complete (PR #9) + 5 UX open items resolved +
+  visual direction (PR #10). Flutter screens drafted in **Figma** (file "cal-lowrisk —
+  Mobile", team "callium project"): all 13 user screens (U1–U15; Home has a ring variant
+  and the chosen **Balance Bar** variant on the "Explore" page). Admin (A1–A7) not yet
+  designed.
+- 🔧 **Dev (in progress):** branch `feat/backend-scaffold`.
+  - ✅ `apps/backend/` scaffolded: Gin entry point, shared layer (config, GORM database,
+    response envelope, Base model with UUIDv7), Makefile (golang-migrate targets),
+    `migrations/{user,food,exercise,nutrition,workout}/`. Builds + vets clean (Go 1.25).
+  - ✅ `user` module migrations WRITTEN (not yet run): `migrations/user/000001..000004`
+    = role, users, user_profile, seed_roles.
+  - ⏳ **Neon:** project `cal-lowrisk-uat` created (project-id `rough-field-65178844`,
+    AWS Singapore). Neon Power connected but tool enumeration was flaky in-session.
+  - ⏳ **Blocked on:** getting the Neon connection strings into `apps/backend/.env`
+    (git-ignored) — pooled (`DATABASE_URL`) + direct (`DATABASE_URL_DIRECT`). Then: run
+    `user` migrations, verify tables + seed, build the `user` module API (register/login/
+    profile with JWT), test endpoints (Postman Power), then mock mobile in Flutter.
+  - ⚠️ `golang-migrate` CLI failed to install in-sandbox (Go toolchain version clash) —
+    will run migrations via Neon Power `execute_sql` or a small Go runner instead.
+  - ⚠️ Do NOT run Neon's generic TS deploy flow (`neon config init`/`neon.ts`/`neon deploy`)
+    — it conflicts with golang-migrate owning the schema. We only need the connection string.
+
+### Dev plan (agreed order)
+master-table migrations → backend API (per module, start with `user` vertical slice) →
+test endpoints → mock mobile in Flutter. Build one module end-to-end before the next.
 
 ## Pointers
 - Full requirements: `docs/01-business/brd.md`
+- Data model: `docs/02-system/erd.md` · Architecture: `docs/02-system/architecture.md` ·
+  Environments/deploy: `docs/02-system/deployment.md`
+- UX flows + screen inventory + visual tokens: `docs/03-ux/user-flows.md`
 - Documentation index: `docs/README.md`
 - How to add a module (code + migrations): skill `add-module`
+- Backend code + how-to: `apps/backend/` (+ its README)
+- Figma (mobile): file "cal-lowrisk — Mobile" in team "callium project" (via Figma Power)
+- Powers connected: Figma (design-to-code), Neon (DB), Postman (API testing)
+
+## For a new session (handover)
+This file is auto-loaded. To resume Dev: the backend is on branch `feat/backend-scaffold`.
+Next concrete step is getting Neon connection strings into `apps/backend/.env` (pooled +
+direct), then running the `user` migrations and verifying `role`/`users`/`user_profile` +
+seeded roles. Prefer the Neon Power `get_connection_string` (project-id
+`rough-field-65178844`); if its tools don't enumerate, ask the user to paste the pooled
+and direct strings from the Neon dashboard Connect page.
 
 #[[file:docs/01-business/brd.md]]
