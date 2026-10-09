@@ -39,3 +39,14 @@ func NewID() uuid.UUID {
 	}
 	return uuid.New()
 }
+
+// Qualify builds a schema-qualified, safely-quoted table identifier for GORM
+// TableName() methods, e.g. Qualify("user", "users") -> `"user"."users"`.
+//
+// Each module owns a PostgreSQL schema named after the module (see product.md +
+// add-module §1). Some module names ("user") are reserved words, so identifiers are
+// always double-quoted. Models reference their schema explicitly rather than relying
+// on a connection-level search_path, keeping cross-module boundaries obvious.
+func Qualify(schema, table string) string {
+	return `"` + schema + `"."` + table + `"`
+}

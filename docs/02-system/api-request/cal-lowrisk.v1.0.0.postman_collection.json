@@ -1,0 +1,148 @@
+{
+  "info": {
+    "name": "Cal-Lowrisk API (v1.0.0)",
+    "_postman_id": "ca1107e0-0000-4000-8000-000000000100",
+    "description": "Cal-Lowrisk HTTP API — importable collection for QA.\n\n**Version:** 1.0.0 (onboarding).\n**Source of truth:** docs/02-system/api-specs/ (contract-first). This collection mirrors `user-service/01. Onboarding User.md`.\n\n## How to use\n1. Import this collection AND one environment file (`environments/`).\n2. Select the environment (top-right in Postman): `cal-lowrisk-local` to hit a locally-run backend, or `cal-lowrisk-uat` once the backend is deployed.\n3. Run requests top-to-bottom. **Login** auto-saves `{{token}}` + `{{userId}}` to the active environment, so **Create Profile** works without copying the token.\n\n## Changelog\n- **1.0.0** — user-service / 01 Onboarding: Register, Login, Create Profile.\n\nSee CHANGELOG.md in this folder for history.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+    "version": "1.0.0"
+  },
+  "item": [
+    {
+      "name": "user-service",
+      "description": "Endpoints owned by the `user` module (bounded context).",
+      "item": [
+        {
+          "name": "01 Onboarding",
+          "description": "New-visitor flow: Register -> Login -> Create Profile. Mirrors api-specs/user-service/01. Onboarding User.md.",
+          "item": [
+            {
+              "name": "Register",
+              "event": [
+                {
+                  "listen": "prerequest",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Use a unique email each run so re-runs don't hit the 409 duplicate rule.",
+                      "pm.environment.set('onboardingEmail', 'qa.' + Date.now() + '@example.com');"
+                    ]
+                  }
+                },
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Spec Endpoint 1 — success is 201 with role=user and no password field.",
+                      "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                      "var b = pm.response.json();",
+                      "pm.test('envelope success=true', function () { pm.expect(b.success).to.be.true; });",
+                      "pm.test('role is user', function () { pm.expect(b.data.role).to.eql('user'); });",
+                      "pm.test('no password leaked', function () { pm.expect(JSON.stringify(b.data)).to.not.match(/password/i); });",
+                      "if (b && b.data) { pm.environment.set('userId', b.data.id); }"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/register",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "register"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{onboardingEmail}}\",\n  \"password\": \"s3curePass\",\n  \"confirmPassword\": \"s3curePass\"\n}"
+                },
+                "description": "POST /auth/register — create an account (role defaults to `user`). USR-1/USR-6.\n\nValidation: email (required, valid, max 255), password (required, 8–72), confirmPassword (== password).\nErrors: 400 VALIDATION_ERROR, 409 CONFLICT (email taken)."
+              }
+            },
+            {
+              "name": "Login",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Spec Endpoint 2 — 200 with token; auto-save token + userId for the next request.",
+                      "pm.test('status is 200', function () { pm.response.to.have.status(200); });",
+                      "var b = pm.response.json();",
+                      "pm.test('envelope success=true', function () { pm.expect(b.success).to.be.true; });",
+                      "pm.test('has token', function () { pm.expect(b.data.token).to.be.a('string').and.not.empty; });",
+                      "pm.test('tokenType Bearer', function () { pm.expect(b.data.tokenType).to.eql('Bearer'); });",
+                      "if (b && b.data) {",
+                      "  pm.environment.set('token', b.data.token);",
+                      "  pm.environment.set('userId', b.data.user.id);",
+                      "}"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [{ "key": "Content-Type", "value": "application/json" }],
+                "url": {
+                  "raw": "{{baseUrl}}/auth/login",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["auth", "login"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"email\": \"{{onboardingEmail}}\",\n  \"password\": \"s3curePass\"\n}"
+                },
+                "description": "POST /auth/login — exchange credentials for a JWT. USR-2.\n\nOn success stores {{token}} and {{userId}} in the active environment.\nErrors: 400 VALIDATION_ERROR, 401 UNAUTHENTICATED (bad creds or deactivated account; same message for unknown email vs wrong password)."
+              }
+            },
+            {
+              "name": "Create Profile",
+              "event": [
+                {
+                  "listen": "test",
+                  "script": {
+                    "type": "text/javascript",
+                    "exec": [
+                      "// Spec Endpoint 3 — 201 with saved profile + computed target.",
+                      "pm.test('status is 201', function () { pm.response.to.have.status(201); });",
+                      "var b = pm.response.json();",
+                      "pm.test('envelope success=true', function () { pm.expect(b.success).to.be.true; });",
+                      "pm.test('has computed target', function () { pm.expect(b.data.target.dailyCalorieTarget).to.be.a('number'); });",
+                      "// Worked example (male/72.5/175/29/moderate/lose) -> 2102.06 (erd.md §5).",
+                      "pm.test('target matches worked example', function () { pm.expect(b.data.target.dailyCalorieTarget).to.eql(2102.06); });"
+                    ]
+                  }
+                }
+              ],
+              "request": {
+                "method": "POST",
+                "header": [
+                  { "key": "Content-Type", "value": "application/json" },
+                  { "key": "Authorization", "value": "Bearer {{token}}" }
+                ],
+                "url": {
+                  "raw": "{{baseUrl}}/me/profile",
+                  "host": ["{{baseUrl}}"],
+                  "path": ["me", "profile"]
+                },
+                "body": {
+                  "mode": "raw",
+                  "raw": "{\n  \"goal\": \"lose\",\n  \"weightKg\": 72.5,\n  \"heightCm\": 175,\n  \"age\": 29,\n  \"sex\": \"male\",\n  \"activityLevel\": \"moderate\"\n}"
+                },
+                "description": "POST /me/profile — create the caller's 1:1 profile; server computes & returns the daily target (Mifflin-St Jeor -> TDEE -> goal). USR-3/USR-4.\n\nAuth: Bearer {{token}} (role `user`). The profile is always for the token's own user.\nErrors: 400 VALIDATION_ERROR, 401 UNAUTHENTICATED, 403 FORBIDDEN (non-user role), 409 CONFLICT (profile already exists)."
+              }
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:8080/api/v1",
+      "description": "Overridden by the selected environment. Fallback = local backend."
+    }
+  ]
+}

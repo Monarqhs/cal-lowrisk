@@ -60,6 +60,15 @@ weight), including a **macronutrient** (protein / carbs / fat) breakdown.
   fixed hardcoded UUIDs. (Also saved as a global learning.) See `docs/02-system/erd.md` §2.
 - **Enum-like values** (sex, activity_level, goal, meal_type, food.source,
   exercise.unit_type) use **CHECK constraints**; only `role` is a seeded table.
+- **Schema-per-module:** each module owns a dedicated PostgreSQL **schema named after the
+  module** (`"user".users`, `food.food`, `nutrition.nutrition_log`, …), not a single
+  `public`. Mirrors the modular-monolith boundaries + eases the microservice extraction
+  path. `user` is a reserved word → the `"user"` schema is **always double-quoted**. Each
+  module's migration tracking table lives **inside its own schema**
+  (`"<module>"."schema_migrations"`). Cross-schema FKs are allowed, but cross-module data
+  access goes through the other module's **service interface** (never a direct cross-schema
+  JOIN). Models set schema via GORM `TableName()` + `model.Qualify(schema, table)`. See
+  erd.md §2 + the `add-module` skill.
 - **Environments:** two **separate Neon projects** — `cal-lowrisk-uat` and
   `cal-lowrisk-prod` (compute quota is per-project → isolated budgets). Backend hosted on
   **Render** (two services). One codebase, config differs per env. Migrations use the
@@ -124,20 +133,29 @@ every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`
   Mobile", team "callium project"): all 13 user screens (U1–U15; Home has a ring variant
   and the chosen **Balance Bar** variant on the "Explore" page). Admin (A1–A7) not yet
   designed.
-- 🔧 **Dev (in progress):** branch `feat/backend-scaffold`.
+- 🔧 **Dev (in progress):** scaffold merged to `main` (PR #11). Branch model now in use:
+  `feat/*` → PR → **`uat`** (tests on Neon `cal-lowrisk-uat`) → PR → `main` (prod later).
+  Current working branch: `feat/user-module` (off `uat`).
   - ✅ `apps/backend/` scaffolded: Gin entry point, shared layer (config, GORM database,
-    response envelope, Base model with UUIDv7), Makefile (golang-migrate targets),
-    `migrations/{user,food,exercise,nutrition,workout}/`. Builds + vets clean (Go 1.25).
-  - ✅ `user` module migrations WRITTEN (not yet run): `migrations/user/000001..000004`
-    = role, users, user_profile, seed_roles.
-  - ⏳ **Neon:** project `cal-lowrisk-uat` created (project-id `rough-field-65178844`,
-    AWS Singapore). Neon Power connected but tool enumeration was flaky in-session.
-  - ⏳ **Blocked on:** getting the Neon connection strings into `apps/backend/.env`
-    (git-ignored) — pooled (`DATABASE_URL`) + direct (`DATABASE_URL_DIRECT`). Then: run
-    `user` migrations, verify tables + seed, build the `user` module API (register/login/
-    profile with JWT), test endpoints (Postman Power), then mock mobile in Flutter.
+    response envelope, Base model with UUIDv7 + `Qualify` helper), Makefile, migrations.
+    Builds + vets clean (Go 1.25).
+  - ✅ **Neon connected** (fresh session fixed the flaky enumeration). `apps/backend/.env`
+    written (git-ignored): pooled `DATABASE_URL` + direct `DATABASE_URL_DIRECT` + JWT.
+    Project `cal-lowrisk-uat` = project-id `rough-field-65178844`, branch
+    `br-young-base-b3wfc5ma`, db `neondb`, PG 18, AWS Singapore.
+  - ✅ **`user` migrations RUN on Neon UAT** (via Neon Power `run_sql`) and verified:
+    tables `role`/`users`/`user_profile` + seeded roles (user/admin). Tracking table
+    `"user"."schema_migrations"` at version 4, dirty=false.
+  - ✅ **Schema-per-module applied:** the `user` module now lives in the `"user"` schema
+    (migrated the existing tables out of `public`; files + Makefile updated to schema-
+    qualified, quoted tracking table). This is the standard for all future modules.
+  - ⏭️ **Next:** build the `user` module API (register/login/profile with JWT) on
+    `feat/user-module`, test endpoints (Postman Power), PR to `uat`, then mock mobile.
   - ⚠️ `golang-migrate` CLI failed to install in-sandbox (Go toolchain version clash) —
-    will run migrations via Neon Power `execute_sql` or a small Go runner instead.
+    run migrations via Neon Power `run_sql` (one statement at a time) and keep
+    `"<module>"."schema_migrations"` in sync (set version, dirty=false).
+  - ⚠️ Neon `cal-lowrisk-prod` NOT created yet (deferred to save free-tier CU-hours;
+    create when we first promote `uat` → `main`).
   - ⚠️ Do NOT run Neon's generic TS deploy flow (`neon config init`/`neon.ts`/`neon deploy`)
     — it conflicts with golang-migrate owning the schema. We only need the connection string.
 
@@ -157,11 +175,13 @@ test endpoints → mock mobile in Flutter. Build one module end-to-end before th
 - Powers connected: Figma (design-to-code), Neon (DB), Postman (API testing)
 
 ## For a new session (handover)
-This file is auto-loaded. To resume Dev: the backend is on branch `feat/backend-scaffold`.
-Next concrete step is getting Neon connection strings into `apps/backend/.env` (pooled +
-direct), then running the `user` migrations and verifying `role`/`users`/`user_profile` +
-seeded roles. Prefer the Neon Power `get_connection_string` (project-id
-`rough-field-65178844`); if its tools don't enumerate, ask the user to paste the pooled
-and direct strings from the Neon dashboard Connect page.
+This file is auto-loaded. Dev is on branch `feat/user-module` (off `uat`). Neon
+`cal-lowrisk-uat` (project-id `rough-field-65178844`) is connected, `apps/backend/.env`
+holds the pooled+direct strings, and the `user` migrations are already run & verified in
+the `"user"` schema (schema-per-module). **Next concrete step:** build the `user` module
+API (register/login/profile + JWT) following the `add-module` skill, test with the Postman
+Power, then PR `feat/user-module` → `uat`. If Neon tools stop enumerating, start a fresh
+session (that fixed it last time) or ask the user to paste connection strings from the
+Neon dashboard. `cal-lowrisk-prod` is not created yet — do that at first `uat`→`main` promote.
 
 #[[file:docs/01-business/brd.md]]

@@ -1,10 +1,11 @@
 -- Module: user — user_profile (1:1 with users). Holds all Mifflin-St Jeor inputs.
 -- Enum-like values use CHECK constraints (erd.md §1 enum strategy).
+-- Lives in the "user" schema (reserved word → always double-quoted).
 BEGIN;
 
-CREATE TABLE IF NOT EXISTS user_profile (
+CREATE TABLE IF NOT EXISTS "user".user_profile (
     id             UUID PRIMARY KEY,
-    user_id        UUID NOT NULL UNIQUE REFERENCES users (id) ON DELETE CASCADE,
+    user_id        UUID NOT NULL UNIQUE REFERENCES "user".users (id) ON DELETE CASCADE,
     weight_kg      NUMERIC(5,2) NOT NULL,
     height_cm      NUMERIC(5,2) NOT NULL,
     age            INT          NOT NULL CHECK (age > 0 AND age < 150),

@@ -25,6 +25,10 @@ Rules (see `/docs/02-system/architecture.md` + the `add-module` skill):
 - Cross-module access only through another module's **service interface**.
 - Schema is owned by **golang-migrate**, NOT GORM AutoMigrate. GORM = runtime queries only.
 - Primary keys are native `uuid`, app-generated **UUIDv7** (`internal/shared/model.Base`).
+- **Schema-per-module:** each module owns a PostgreSQL schema named after the module
+  (tables are `"<module>".<table>`; `"user"` is quoted — reserved word). Each module keeps
+  its own tracking table `"<module>"."schema_migrations"`. Models set this via `TableName()`
+  + `model.Qualify(...)`. See `docs/02-system/erd.md` §2 and the `add-module` skill.
 
 ## Prerequisites
 

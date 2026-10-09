@@ -86,6 +86,26 @@ roles are additive without code changes.
 | `workout` | `workout_log` |
 | `summary` | *(none — computed)* |
 
+- **Schema-per-module (DB-level bounded context):** each module owns a dedicated
+  PostgreSQL **schema named after the module** — tables are `"user".users`,
+  `food.food`, `nutrition.nutrition_log`, etc. (not everything in `public`). This mirrors
+  the modular-monolith code boundaries and keeps the microservice extraction path clean
+  (a module's schema can be dumped/moved on its own). Rules:
+  - The module name **is** the schema name. `user` is a SQL **reserved word**, so the
+    `"user"` schema must **always be double-quoted** in SQL, migrations, and GORM
+    `TableName()`. Other module schemas (`food`, `exercise`, `nutrition`, `workout`,
+    `summary`) need no quoting.
+  - Each module keeps its **own migration tracking table inside its own schema**:
+    `"<module>"."schema_migrations"` (golang-migrate with
+    `-x-migrations-table-quoted=1`). Migration `000001` of each module does
+    `CREATE SCHEMA IF NOT EXISTS` first.
+  - Models reference their schema **explicitly** via GORM `TableName()` (helper
+    `model.Qualify(schema, table)`), not via a connection-level `search_path`.
+  - **Cross-schema FKs are allowed** (single DB today) — e.g.
+    `nutrition.nutrition_log.food_id → food.food.id`. But **data access across modules
+    must go through the other module's service interface**, never a direct cross-schema
+    JOIN or repository reach-in. This preserves the extraction path (see `add-module` §1).
+
 > **Migration dependency order** (FKs): `user` → `food` → `exercise` → `nutrition` →
 > `workout`. This matches the canonical order in the `add-module` skill.
 

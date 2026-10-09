@@ -1,5 +1,5 @@
 BEGIN;
 
-DELETE FROM role WHERE name IN ('user', 'admin');
+DELETE FROM "user".role WHERE name IN ('user', 'admin');
 
 COMMIT;

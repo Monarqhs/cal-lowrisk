@@ -7,6 +7,7 @@ import (
 	"log"
 	"net/http"
 
+	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/modules/user"
 	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/config"
 	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/database"
 	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/response"
@@ -23,7 +24,6 @@ func main() {
 	if err != nil {
 		log.Fatalf("startup: database: %v", err)
 	}
-	_ = db // modules will receive this once they are wired below.
 
 	if cfg.AppEnv == "prod" {
 		gin.SetMode(gin.ReleaseMode)
@@ -40,8 +40,8 @@ func main() {
 
 	// --- Module registration (dependency order: user -> food -> exercise ->
 	//     nutrition -> workout -> summary). Wired as modules land. ---
-	// user.New(db, cfg).RegisterRoutes(api)
-	_ = api
+	userModule := user.New(db, cfg)
+	userModule.RegisterRoutes(api)
 
 	log.Printf("cal-lowrisk backend listening on :%s (env=%s)", cfg.Port, cfg.AppEnv)
 	if err := r.Run(":" + cfg.Port); err != nil {
