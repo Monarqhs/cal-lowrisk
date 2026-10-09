@@ -20,7 +20,7 @@ MODULES_DOWN = workout nutrition exercise food user
 # at the schema-qualified, quoted tracking table. See product.md + add-module §3.
 PSQL ?= psql
 
-.PHONY: run tidy build test migrate-up migrate-down migrate-status migrate-create
+.PHONY: run tidy build test test-unit test-e2e migrate-up migrate-down migrate-status migrate-create
 
 run:
 	go run ./cmd/api
@@ -31,8 +31,18 @@ tidy:
 build:
 	go build -o bin/api ./cmd/api
 
+## test: run everything (E2E auto-skips unless TEST_DATABASE_URL is set)
 test:
 	go test ./...
+
+## test-unit: fast unit tests only (no DB)
+test-unit:
+	go test ./tests/unit/...
+
+## test-e2e: E2E against a disposable DB (set TEST_DATABASE_URL to a throwaway Neon branch)
+test-e2e:
+	@test -n "$(TEST_DATABASE_URL)" || (echo "set TEST_DATABASE_URL to a disposable DB (see tests/README.md)"; exit 1)
+	go test ./tests/e2e/... -v
 
 ## migrate-up: apply all module migrations in dependency order
 migrate-up:

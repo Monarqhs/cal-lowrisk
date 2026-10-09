@@ -1,16 +1,14 @@
 // Command api is the single entry point for the cal-lowrisk modular monolith.
-// It wires modules in dependency order and registers their routes on one Gin engine.
+// Router construction lives in internal/app so the server and the E2E tests share it.
 // See docs/02-system/architecture.md §4.
 package main
 
 import (
 	"log"
-	"net/http"
 
-	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/modules/user"
+	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/app"
 	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/config"
 	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/database"
-	"github.com/Monarqhs/cal-lowrisk/apps/backend/internal/shared/response"
 	"github.com/gin-gonic/gin"
 )
 
@@ -28,20 +26,8 @@ func main() {
 	if cfg.AppEnv == "prod" {
 		gin.SetMode(gin.ReleaseMode)
 	}
-	r := gin.New()
-	r.Use(gin.Logger(), gin.Recovery())
 
-	// Liveness/readiness. Also useful to warm Neon after auto-suspend (deployment.md §8.3).
-	r.GET("/healthz", func(c *gin.Context) {
-		response.OK(c, http.StatusOK, gin.H{"status": "ok", "env": cfg.AppEnv})
-	})
-
-	api := r.Group("/api/v1")
-
-	// --- Module registration (dependency order: user -> food -> exercise ->
-	//     nutrition -> workout -> summary). Wired as modules land. ---
-	userModule := user.New(db, cfg)
-	userModule.RegisterRoutes(api)
+	r := app.NewRouter(db, cfg)
 
 	log.Printf("cal-lowrisk backend listening on :%s (env=%s)", cfg.Port, cfg.AppEnv)
 	if err := r.Run(":" + cfg.Port); err != nil {
