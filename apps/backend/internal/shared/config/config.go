@@ -25,8 +25,8 @@ type Config struct {
 	DBConnMaxLifetime time.Duration
 
 	// Auth
-	JWTSecret   string
-	JWTTTL      time.Duration
+	JWTSecret string
+	JWTTTL    time.Duration
 }
 
 // Load reads configuration from the environment, applying sane defaults for local dev.
