@@ -5,7 +5,7 @@
 | **Project** | cal-lowrisk |
 | **Document** | UX — user flows, sitemap, screen inventory, low-fi wireframes |
 | **Version** | 0.1 (Draft) |
-| **Status** | Draft — pending review |
+| **Status** | Draft — open items resolved (see §10) |
 | **Author** | Product Owner + Kiro (UX) |
 | **Phase** | UX (follows the SA phase: `erd.md`, `architecture.md`, `deployment.md`) |
 | **Last updated** | 2026-10-08 |
@@ -47,6 +47,7 @@ flowchart TD
     Home --> LogWorkout["Log Workout"]
     Home --> Summary["Summaries (week/month)"]
     Home --> Profile["Profile & Goal"]
+    Profile --> MyFoods["My Foods (custom foods)"]
 
     LogMeal --> FoodSearch["Food search (catalog + my custom)"]
     FoodSearch --> CustomFood["Create custom food"]
@@ -206,8 +207,9 @@ design in Figma (§9).**
 | U10 | **Portion Picker** | serving options (if any) + quantity, OR grams input; live calorie/macro preview | confirm |
 | U11 | **Log Workout — search** | search box, catalog results | select exercise |
 | U12 | **Amount Entry** | input adapts to unit_type (minutes/reps/steps), live burn estimate | confirm |
-| U13 | **Summaries** | segmented Daily/Weekly/Monthly; net, target, status, macro breakdown, simple trend | switch range |
-| U14 | **Profile & Goal** | current body data + goal, edit; shows current target | edit (recomputes target) |
+| U13 | **Summaries** | segmented Daily/Weekly/Monthly; net, target, status, macro breakdown; **daily ring**, **weekly/monthly bar chart** (§10.2) | switch range |
+| U14 | **Profile & Goal** | current body data + goal, edit; shows current target; entry point to **My Foods** | edit (recomputes target); open My Foods |
+| U15 | **My Foods** | list of the user's reusable custom foods (name, calories, macros); scoped to the user only | edit / delete a custom food (§10.4) |
 
 ### 6.2 Admin web (Next.js) — desktop
 | # | Screen | Must contain | Key actions |
@@ -293,7 +295,8 @@ Intentionally rough — just layout intent for the Figma brief.
 The screen inventory (§6) is your design brief. To make the later **design → code** step
 (via the Figma Power, in the Dev phase) as clean as possible:
 
-- [ ] One Figma file (or two: **Mobile** = U1–U14, **Admin** = A1–A7).
+- [ ] One Figma file (or two: **Mobile** = U1–U15, **Admin** = A1–A7).
+- [ ] Apply the **visual direction & tokens** in §11 (type, color, spacing, radius, icons).
 - [ ] **Name each frame** to match the inventory (e.g. `Home / Today`, `Portion Picker`,
       `Food Catalog`) — frame names become screen/component names in code.
 - [ ] Use **Auto Layout** — translates far more accurately to Flutter/CSS layout.
@@ -309,15 +312,79 @@ The screen inventory (§6) is your design brief. To make the later **design → 
 
 ---
 
-## 10. Open items for review
+## 10. Decisions (resolved)
 
-1. **Navigation pattern (mobile):** bottom tab bar (Home / Summaries / Profile) vs
-   Home-centric with push navigation. (Leaning bottom tabs for a tracker.)
-2. **Weekly/monthly visualization:** simple numbers vs a lightweight chart — how much
-   visualization for MVP without heavy chart deps.
-3. **Meal-type requirement:** is `meal_type` mandatory per entry, or default to a
-   time-of-day guess the user can change?
-4. **Custom food editing:** can a user edit/delete their custom foods from a dedicated
-   "My Foods" screen (beyond inline during logging)?
-5. **Admin dashboard metrics (A2):** exact aggregate widgets for MVP (ties to deployment
-   §8 and ADM-4), staying within the privacy boundary.
+These were open items; now decided. A visual reference (an AI calorie-tracker UI on
+Behance) informed them — used as *directional inspiration only*, not copied (see §11).
+
+### 10.1 Mobile navigation — **bottom tab bar + center FAB**
+Four tabs with a central **`+` FAB** for quick-add (meal/workout):
+`Home` · `Summary` · **`+`** · `Profile`. Matches the tracker mental model and keeps the
+most frequent action (logging, P2) one tap away.
+- **"My Foods" lives inside Profile** (not its own tab) to keep the bar lean.
+- We deliberately do **not** copy the reference's `Recipes` / `ai chat` tabs — out of MVP
+  scope (BRD §5.2).
+
+### 10.2 Weekly/monthly visualization — **ring (daily) + bar chart (weekly/monthly)**
+- **Daily (Home):** a **circular ring progress** for calories vs target — visually strong
+  but using a simple ring, not a custom half-gauge (avoids heavy custom painting).
+- **Weekly/monthly:** a **simple bar chart** (e.g. 7 bars for the week) via a lightweight
+  lib (`fl_chart`) plus the key numbers (avg net, on-track %).
+- **Numbers remain primary (P1);** charts support them. No animated gauges for MVP.
+
+### 10.3 Meal type — **required, with a smart time-of-day default**
+`meal_type` is mandatory (it already is `NOT NULL` + CHECK in `erd.md`), but the Log-Meal
+screen **pre-selects** it from the current time, and the user can change it:
+- rough cutoffs: `< 11:00 breakfast` · `11:00–15:00 lunch` · `15:00–18:00 snack` ·
+  `> 18:00 dinner`.
+- Best of both: data always populated (clean grouping) with zero friction (P2).
+
+### 10.4 Custom food editing — **yes, a "My Foods" screen (U15)**
+A dedicated screen lists the user's reusable custom foods with edit/delete, beyond inline
+creation during logging (NUT-7). Reached from **Profile**.
+- **Privacy:** the list is always scoped to `owner_user_id = current_user`; admins never
+  see it (§4.1 / P5).
+
+### 10.5 Admin dashboard metrics (A2) — **4 stat cards + 1 aggregate list**
+Read-only, strictly within the privacy boundary (ADM-4 / ADM-6):
+- **Stat cards:** Total users · Active users · Foods in catalog · Exercises in catalog.
+- **One list:** "Most-logged foods" (top 5–10) — an **aggregate across users**, never an
+  individual's data.
+- **No** widget drills into any single user's logs/activity.
+
+---
+
+## 11. Visual direction & design tokens (Figma brief)
+
+Directional guidance for the Figma design, informed by a reference UI but intentionally
+**not a copy** — our product has its own scope and feel. Treat these as starting tokens to
+refine in Figma, then they become theme constants in code.
+
+### 11.1 Direction (the "feel")
+- **Warm, clean, calm.** A warm primary (orange family) on lots of white space; health
+  content should feel encouraging, not clinical.
+- **Hero number on Home.** The big calories/net figure is the focal point (P1) — supported
+  by a progress ring and color-coded status.
+- **Color-coded macros.** Protein / Carbs / Fat each get a distinct, consistent accent so
+  they're scannable at a glance.
+- **Horizontal date strip** on Home for quick day switching.
+- **Avoid slop:** no gratuitous gradients/shadows, no fake "AI" flourishes, no unused
+  decorative charts. Every element earns its place.
+
+### 11.2 Starting tokens (refine in Figma)
+| Token | Suggested starting value | Note |
+|---|---|---|
+| **Typography** | **Inter** or **Plus Jakarta Sans** | NOT SF Pro (Apple-licensed, iOS-only); pick a cross-platform, Flutter-friendly family. Jakarta Sans reads well for an Indonesian audience. |
+| **Primary** | warm orange (e.g. `#F0542D` / `#F37252`) | brand + primary actions, FAB, active states |
+| **Macro — protein** | blue (e.g. `#2F80ED`) | consistent everywhere protein appears |
+| **Macro — carbs** | green (e.g. `#27AE60`) | |
+| **Macro — fat** | amber (e.g. `#F2994A`) | |
+| **Status — deficit / balanced / surplus** | define a 3-way accessible palette | must pass contrast; used on the Home status chip |
+| **Neutrals / text** | near-black (e.g. `#151313`) + grays | body text, borders, surfaces |
+| **Spacing scale** | multiples of 4: 4 / 8 / 12 / 16 / 20 / 24 | reference used 16/20px rhythm |
+| **Radius** | generous, soft (e.g. 12–20px cards) | friendly, modern feel |
+| **Icons** | one consistent line-style set | clean, even stroke weight |
+
+### 11.3 Explicitly out of scope for design (don't design these)
+AI chat, recipe discovery, barcode/photo capture, social — all out of MVP scope (BRD §5.2).
+Designing them now would create slop and false expectations.
