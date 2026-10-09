@@ -1,0 +1,21 @@
+# cal-lowrisk backend — environment template.
+# Copy to .env (git-ignored) and fill in. NEVER commit real secrets.
+# See docs/02-system/deployment.md §4.
+
+APP_ENV=dev
+PORT=8080
+
+# Neon connection strings.
+# DATABASE_URL        = POOLED (-pooler host) — used by the app at runtime.
+# DATABASE_URL_DIRECT = DIRECT (non-pooled)   — used by golang-migrate.
+DATABASE_URL=postgres://user:password@ep-xxxx-pooler.region.aws.neon.tech/dbname?sslmode=require
+DATABASE_URL_DIRECT=postgres://user:password@ep-xxxx.region.aws.neon.tech/dbname?sslmode=require
+
+# Pool sizing — keep small for Neon free-tier connection limits.
+DB_MAX_OPEN_CONNS=8
+DB_MAX_IDLE_CONNS=2
+DB_CONN_MAX_LIFETIME_MIN=5
+
+# Auth
+JWT_SECRET=change-me-in-each-environment
+JWT_TTL_HOURS=24
