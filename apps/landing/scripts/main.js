@@ -1,29 +1,5 @@
-// Page bootstrap: dynamic year + a lightweight reveal-on-scroll for engagement.
-// The hero uses a static illustration (<img>) harmonized with the background via CSS.
-
-// Footer year
+// Page bootstrap: just the footer year.
+// Motion is intentionally minimal — a single CSS-driven hero entrance, no
+// scroll-triggered fades (anti-slop: "animate-on-scroll on everything" is a tell).
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
-
-// Reveal-on-scroll: fade/slide elements in as they enter the viewport.
-// Respects reduced-motion (we simply show everything, no animation).
-const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-const revealTargets = document.querySelectorAll(".card, .step, .section-title, .section-lead, .team-points li");
-
-if (reduceMotion || !("IntersectionObserver" in window)) {
-  revealTargets.forEach((el) => el.classList.add("is-in"));
-} else {
-  revealTargets.forEach((el) => el.classList.add("reveal"));
-  const io = new IntersectionObserver(
-    (entries, obs) => {
-      entries.forEach((e) => {
-        if (e.isIntersecting) {
-          e.target.classList.add("is-in");
-          obs.unobserve(e.target);
-        }
-      });
-    },
-    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
-  );
-  revealTargets.forEach((el) => io.observe(el));
-}

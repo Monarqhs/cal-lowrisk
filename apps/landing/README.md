@@ -83,8 +83,20 @@ If DNS is on Cloudflare, records are added automatically; HTTPS is automatic.
 Keep DNS on Cloudflare and use **Email Routing** (free) to forward
 `call.help@callium.app` to a personal inbox. Full mailbox (Google Workspace / Zoho) later.
 
+## Design discipline
+
+This page was passed against the [nutlope/hallmark](https://github.com/nutlope/hallmark)
+anti-AI-slop rule-set. Named tells deliberately avoided: the AI nav (wordmark-left /
+links-center / CTA-right), the 3–4-col icon-tile feature grid, per-section eyebrows, the
+4-column link footer, fade-up-on-every-section, pure #000/#fff, gradient/aurora heroes,
+italic headers. Colours are OKLCH tokens (tinted neutrals, one warm accent); motion is a
+single CSS hero entrance; punctuation uses em-dashes and curly quotes. The CSS top carries
+the Hallmark macrostructure stamp + a pre-emit self-critique.
+
 ## TODO
 - Swap Anton → **Harse** once the licensed font file is available (self-host via `@font-face`,
-  update `--font-title`).
-- Replace `assets/hero-illustration.png` with the final hero image.
+  update `--font-display`).
+- **Re-export the hero image as real PNG/WebP.** `assets/hero-illustration.png` is currently
+  a JPEG (2752×1536, ~1.9 MB) with a `.png` name. Browsers render it, but for correctness +
+  LCP, export a compressed `.webp` (or true `.png`) ≤ ~300 KB and update the `src`.
 - Replace the SVG `og-image` with a rendered PNG once branding is finalized.
