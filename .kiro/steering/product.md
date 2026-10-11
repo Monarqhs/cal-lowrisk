@@ -177,12 +177,25 @@ every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`
     Pages (CNAME `@` → `cal-lowrisk.pages.dev`); was "Initializing" at handoff (SSL
     provisioning, up to ~15 min).
   - ✅ **Email Routing DONE** on `callium.app` (DNS records Locked). Destination
-    `ghalihyulio12@gmail.com` added + **Verified**; routing rule `call.help@callium.app`
-    → that destination is **Active**; forwarding **tested end-to-end** (inbound email to
-    `call.help@callium.app` arrives in the Gmail inbox). Catch-all rule left Disabled (Drop)
-    by choice. Footer email on the landing is `call.help@callium.app`.
-    - Optional next (not done): enable Gmail "Send mail as" so the user can reply from
-      `call.help@callium.app`, and/or a full mailbox (Zoho free / Workspace).
+    `ghalihyulio12@gmail.com` added + **Verified**. Two routing rules **Active**, both
+    forwarding to that Gmail: `call.help@callium.app` (public/support, used in the landing
+    footer) and `yulio.ananda@callium.app` (founder identity, used for Claude Console +
+    program/official comms). Forwarding **tested end-to-end** (inbound email arrives in the
+    Gmail inbox). Catch-all rule left Disabled (Drop) by choice.
+    - Optional next (not done): enable Gmail "Send mail as" so the user can reply from an
+      `@callium.app` address (needs SMTP relay — Zoho free / Resend), and/or a full mailbox.
+  - ✅ **Claude for Startups — APPLIED** (submitted, "Thanks for submitting! Our team is
+    reviewing…"). Created a **Claude Console Organization** `Callium` (entity: Small or
+    medium business; based in Indonesia) under founder email `yulio.ananda@callium.app`.
+    Application answered honestly: early-stage/bootstrapped, no outside funding, founded
+    Oct 2024, industry Consumer, website `https://callium.app`, positioned as an
+    **educational self-tracking tool, not medical advice**. Skipped buying API credits
+    (org credits $0.00). ⏳ Awaiting Anthropic review via email (lands in Gmail through the
+    `yulio.ananda@` forward — watch inbox + spam).
+    - ⚠️ Context: Anthropic **paused** the program's two headline perks ($1,000 API credits
+      + 1 free year of Claude Team) on ~9 Oct 2026 after a demand surge (re-reviewing). So
+      the application is likely queued/under re-review; benefit grant is NOT guaranteed and
+      credits often require institutional funding (which Callium doesn't have).
 
 ### Dev plan (agreed order)
 Per module, build end-to-end before the next: **API spec (contract-first, with a Test
@@ -223,12 +236,16 @@ This file is auto-loaded. State as of this handoff:
 - **Landing/marketing:** `apps/landing/` is LIVE on Cloudflare Pages at
   `cal-lowrisk.pages.dev`, auto-deploying from `main`. Domain `callium.app` bought on
   Cloudflare and attached as a custom domain (may still be finishing SSL).
-- **✅ Email Routing DONE:** Cloudflare Email Routing on `callium.app` is fully set up —
-  destination `ghalihyulio12@gmail.com` Verified, routing rule `call.help@callium.app` →
-  that destination Active, and inbound forwarding tested end-to-end (test email arrived in
-  the Gmail inbox). Catch-all left Disabled (Drop) by choice. Optional next (not done):
-  enable Gmail "Send mail as" to reply from `call.help@callium.app`, and/or a full mailbox
-  (Zoho free / Workspace).
+- **✅ Email Routing DONE:** Cloudflare Email Routing on `callium.app` fully set up —
+  destination `ghalihyulio12@gmail.com` Verified; two Active rules forwarding to it:
+  `call.help@callium.app` (public/support) and `yulio.ananda@callium.app` (founder); inbound
+  forwarding tested end-to-end. Catch-all left Disabled (Drop). Optional next (not done):
+  Gmail "Send mail as" to reply from an `@callium.app` address, and/or a full mailbox.
+- **✅ Claude for Startups APPLIED:** Claude Console Org `Callium` (SMB, Indonesia) created
+  under `yulio.ananda@callium.app`; application submitted and awaiting Anthropic review (email
+  will land in Gmail via the `yulio.ananda@` forward). Answered honestly as early-stage/
+  bootstrapped, no funding. NOTE: Anthropic paused the two headline perks (~9 Oct 2026) amid
+  a demand surge, so the app is likely queued/re-reviewed — benefits are not guaranteed.
 - **Fonts:** landing title uses **Anton** as a placeholder for **Harse** (not free on
   Google Fonts). When the user supplies a licensed Harse file, self-host via `@font-face`
   and update `--font-display` in `apps/landing/styles/main.css`.
