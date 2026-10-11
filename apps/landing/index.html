@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Callium — building cal-lowrisk, a smarter health balance tracker</title>
+  <meta name="description" content="Callium is building cal-lowrisk: a health tracker that tells you, at a glance, whether your food and activity are balanced against your goal — calories in vs out, with a macro breakdown." />
+
+  <meta property="og:type" content="website" />
+  <meta property="og:title" content="Callium — cal-lowrisk" />
+  <meta property="og:description" content="Know, at a glance, if your day is balanced against your goal. Calories in vs out, macros, personalized targets." />
+  <meta property="og:image" content="/assets/og-image.svg" />
+  <meta name="theme-color" content="#FF6B3D" />
+
+  <!-- Domain/tab icon: optimized 1:1 Callium logo. apple-touch-icon for mobile bookmarks. -->
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png" />
+  <link rel="apple-touch-icon" href="/assets/favicon-180.png" />
+  <link rel="preload" as="image" href="/assets/hero-illustration.webp" fetchpriority="high" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="/styles/main.css" />
+</head>
+<body>
+  <a class="skip-link" href="#main">Skip to content</a>
+
+  <header class="site-header" id="top">
+    <nav class="nav container" aria-label="Primary">
+      <a class="brand" href="#top" aria-label="Callium home">
+        <span class="brand-logo">
+          <img src="/assets/Cal-Logo-2.webp" alt="Callium" width="720" height="402" />
+        </span>
+      </a>
+      <div class="nav-links">
+        <a href="#top">Home</a>
+        <a href="#product">Product</a>
+        <a href="#how">How it works</a>
+        <a href="#team">Team</a>
+        <a class="nav-contact" href="#contact">Contact <span aria-hidden="true">→</span></a>
+      </div>
+    </nav>
+  </header>
+
+  <main id="main">
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid container">
+        <div class="hero-copy">
+          <p class="kicker">Callium · building in the open</p>
+          <h1 class="hero-title">
+            <span class="line">Are you <span class="u-underline">balanced</span></span>
+            <span class="line">against your goal<span class="dot-accent">?</span></span>
+          </h1>
+          <p class="hero-sub">
+            Most trackers dump numbers on you. <strong>cal-lowrisk</strong> answers one
+            question first — is your day in <em>deficit</em>, <em>balanced</em>, or
+            <em>surplus</em> — then shows the macros behind it.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#contact">Get early access</a>
+            <a class="btn btn-text" href="#how">See how it works <span aria-hidden="true">→</span></a>
+          </div>
+          <p class="hero-meta">A Callium product · in active development</p>
+        </div>
+
+        <figure class="hero-art">
+          <div class="hero-frame">
+            <img
+              class="hero-illustration"
+              src="/assets/hero-illustration.webp"
+              onerror="this.onerror=null;this.src='/assets/hero-illustration.svg'"
+              alt="A person enjoying a fresh salad at a table — eating in balance"
+              width="1440" height="804"
+              fetchpriority="high" decoding="async"
+            />
+          </div>
+        </figure>
+      </div>
+    </section>
+
+    <!-- STATUS strip -->
+    <section class="status-strip" id="status">
+      <div class="container status-strip-inner">
+        <span class="pill pill-rnd">R&amp;D</span>
+        <p><strong>cal-lowrisk is in active development.</strong> We're building the backend, mobile app, and admin tooling now — this page previews the product and the team, not a live app (yet).</p>
+      </div>
+    </section>
+
+    <!-- PRODUCT — cards, but asymmetric: one wide lead card + three regular (not an
+         equal 3/4-col icon-tile grid). Icons inline-left, hairline borders, hover lift. -->
+    <section class="product" id="product">
+      <div class="container">
+        <div class="product-head">
+          <h2 class="section-title">One question,<br />answered clearly.</h2>
+          <p class="section-lead">cal-lowrisk folds a calorie tracker and a workout tracker into one goal-aware picture — day, week, and month.</p>
+        </div>
+        <div class="cards">
+          <article class="card card-lead">
+            <span class="line-icon" data-ill="balance"></span>
+            <div class="card-body">
+              <h3>Balance at a glance</h3>
+              <p>Calories in vs. out vs. your personalized target — one hero number, with a clear deficit / balanced / surplus read. No spreadsheets, no guessing.</p>
+            </div>
+          </article>
+          <article class="card">
+            <span class="line-icon" data-ill="macros"></span>
+            <div class="card-body">
+              <h3>Macros that make sense</h3>
+              <p>Protein, carbs, and fat broken out and colour-coded — <em>what</em> made up the day, not just the total.</p>
+            </div>
+          </article>
+          <article class="card">
+            <span class="line-icon" data-ill="target"></span>
+            <div class="card-body">
+              <h3>A target built for you</h3>
+              <p>Your daily goal from your body data (Mifflin–St Jeor → TDEE), adjusted for lose / maintain / gain.</p>
+            </div>
+          </article>
+          <article class="card">
+            <span class="line-icon" data-ill="local"></span>
+            <div class="card-body">
+              <h3>Local-first food</h3>
+              <p>A catalog oriented toward Indonesian meals and household serving sizes — logging feels native, not translated.</p>
+            </div>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- HOW — a genuinely ordinal sequence, so numbers are honest here. -->
+    <section class="how" id="how">
+      <div class="container">
+        <h2 class="section-title">Three steps. That's the whole loop.</h2>
+        <ol class="steps">
+          <li class="step">
+            <span class="step-num">01</span>
+            <h3>Set your goal</h3>
+            <p>Pick lose, maintain, or gain. Add weight, height, age, sex, activity — we do the math.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">02</span>
+            <h3>Log meals &amp; workouts</h3>
+            <p>A few taps per entry. Catalog foods, custom foods, and workouts with burn estimates.</p>
+          </li>
+          <li class="step">
+            <span class="step-num">03</span>
+            <h3>See your balance</h3>
+            <p>Daily, weekly, monthly — net calories vs. your target, with the macro story behind it.</p>
+          </li>
+        </ol>
+      </div>
+    </section>
+
+    <!-- TEAM -->
+    <section class="team" id="team">
+      <div class="container team-inner">
+        <div class="team-copy">
+          <h2 class="section-title">Callium</h2>
+          <p class="section-lead">A small team building practical, privacy-respecting health tools. <strong>cal-lowrisk</strong> is our first product — a modern, enterprise-grade stack built end to end: Go backend, Flutter app, Next.js admin, on PostgreSQL.</p>
+          <ul class="team-points">
+            <li><span class="tick" aria-hidden="true"></span> Privacy by design — your logs are yours; admins only ever see aggregates.</li>
+            <li><span class="tick" aria-hidden="true"></span> Built in the open, documented as we go.</li>
+            <li><span class="tick" aria-hidden="true"></span> Not medical advice — a self-tracking tool, by design.</li>
+          </ul>
+        </div>
+        <div class="team-art" aria-hidden="true">
+          <span class="line-icon line-icon-lg" data-ill="bowl"></span>
+          <span class="tag tag-protein">protein</span>
+          <span class="tag tag-carbs">carbs</span>
+          <span class="tag tag-fat">fat</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- CONTACT — statement close, not a 4-column link catalogue. -->
+    <section class="contact" id="contact">
+      <div class="container contact-inner">
+        <h2 class="section-title contact-title">Want early access,<br />or to build with us?</h2>
+        <p class="contact-lead">Testers, collaborators, and the curious — all welcome.</p>
+        <a class="btn btn-primary btn-lg" href="mailto:call.help@callium.app?subject=Interested%20in%20cal-lowrisk">call.help@callium.app</a>
+      </div>
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <div class="container footer-inner">
+      <span class="brand-name footer-mark">Callium</span>
+      <p class="footer-legal">© <span id="year">2026</span> Callium · cal-lowrisk is in active development · a self-tracking tool, not medical advice.</p>
+    </div>
+  </footer>
+
+  <script type="module" src="/scripts/main.js"></script>
+</body>
+</html>

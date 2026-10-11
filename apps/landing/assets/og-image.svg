@@ -1,0 +1,18 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="1200" height="630">
+  <rect width="1200" height="630" fill="#fcfbf9"/>
+  <rect x="20" y="20" width="1160" height="590" rx="20" fill="none" stroke="#141210" stroke-width="3"/>
+  <text x="80" y="110" font-family="Impact, 'Arial Narrow Bold', sans-serif" font-size="40" letter-spacing="2" fill="#141210">CALLIUM</text>
+  <text x="80" y="300" font-family="Impact, 'Arial Narrow Bold', sans-serif" font-size="104" fill="#141210">ARE YOU</text>
+  <text x="80" y="410" font-family="Impact, 'Arial Narrow Bold', sans-serif" font-size="104" fill="#141210">BALANCED<tspan fill="#ff6b3d">?</tspan></text>
+  <text x="80" y="480" font-family="Poppins, sans-serif" font-size="30" fill="#4a443f">cal-lowrisk — calories in vs out, macros, personalized targets.</text>
+  <g transform="translate(80,520)">
+    <rect width="150" height="44" rx="22" fill="#141210"/>
+    <text x="22" y="30" font-family="Poppins, sans-serif" font-size="20" font-weight="700" fill="#f59e0b">R&amp;D</text>
+    <text x="70" y="30" font-family="Poppins, sans-serif" font-size="18" font-weight="600" fill="#fff">preview</text>
+  </g>
+  <!-- line-art target motif -->
+  <g transform="translate(980,315)" fill="none" stroke="#141210" stroke-width="5">
+    <circle r="150"/><circle r="92"/><circle r="34"/>
+  </g>
+  <circle cx="980" cy="315" r="10" fill="#ff6b3d"/>
+</svg>

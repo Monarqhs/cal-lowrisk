@@ -1,0 +1,26 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1024 585" width="1024" height="585" role="img" aria-label="Placeholder: person eating a salad at a table">
+  <rect width="1024" height="585" fill="#fcfbf9"/>
+  <g fill="none" stroke="#141210" stroke-width="4" stroke-linecap="round" stroke-linejoin="round">
+    <!-- window + plant hints (light) -->
+    <path d="M815 120v230M815 120h-70" stroke="#d8cfc4"/>
+    <path d="M205 360c-14-70 6-150 34-180" stroke="#bcae9f"/>
+    <path d="M239 230c22 6 40 26 44 54" stroke="#bcae9f"/>
+    <!-- table -->
+    <path d="M300 430h430"/>
+    <path d="M330 430v120M700 430v120"/>
+    <!-- person -->
+    <circle cx="520" cy="190" r="52"/>
+    <path d="M470 250c-18 30-24 70-22 110"/>
+    <path d="M570 250c20 28 28 70 24 112"/>
+    <path d="M486 300l-40 46"/>
+    <!-- bowl of salad -->
+    <path d="M430 388h150"/>
+    <path d="M436 388a69 50 0 0 0 138 0"/>
+    <circle cx="470" cy="372" r="10" stroke="#22c55e"/>
+    <circle cx="505" cy="366" r="11" stroke="#ff6b3d"/>
+    <circle cx="540" cy="374" r="9" stroke="#22c55e"/>
+    <!-- glass -->
+    <path d="M360 388l6 40h22l6-40z"/>
+  </g>
+  <text x="512" y="540" text-anchor="middle" font-family="Poppins, sans-serif" font-size="20" fill="#8c837c">Replace with your hero illustration (assets/hero-illustration.png)</text>
+</svg>
