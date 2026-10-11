@@ -67,7 +67,19 @@ strong { color: var(--ink); }
 
 /* ---------- Display + kicker ---------- */
 .brand { display: inline-flex; align-items: center; }
-.brand-logo { height: 34px; width: auto; display: block; }
+/* The logo file is a JPEG wordmark on an off-white textured background. We "crop" to the
+   wordmark: a fixed viewport (span) clips the empty margins while the inner <img> is scaled
+   up and centered so only the "Callium" wordmark shows. mix-blend-mode: multiply drops the
+   near-white logo background into our paper so it sits seamlessly in the bar. */
+.brand-logo {
+  --logo-zoom: 172%;   /* tune this one number if the crop is too tight/loose */
+  display: block; width: 132px; height: 34px; overflow: hidden; position: relative;
+  mix-blend-mode: multiply;
+}
+.brand-logo img {
+  position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%);
+  width: var(--logo-zoom); height: auto; max-width: none;
+}
 .brand-name { font-family: var(--font-display); font-size: 1.45rem; letter-spacing: .04em; text-transform: uppercase; }
 .kicker { font-weight: 600; font-size: .8rem; letter-spacing: .16em; text-transform: uppercase; color: var(--accent-600); margin: 0 0 var(--space-md); }
 
