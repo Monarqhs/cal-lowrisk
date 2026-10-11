@@ -176,10 +176,13 @@ every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`
   - **Domain `callium.app`** bought on Cloudflare (~$8.20/yr) → custom domain attached to
     Pages (CNAME `@` → `cal-lowrisk.pages.dev`); was "Initializing" at handoff (SSL
     provisioning, up to ~15 min).
-  - **Email Routing** enabled on `callium.app` (DNS records Locked). ⏳ **In progress /
-    unfinished:** still need to (1) add destination `ghalihyulio12@gmail.com` and VERIFY it
-    via the Gmail link, (2) create routing rule `call.help@callium.app` → that destination,
-    (3) test. Footer email on the landing is `call.help@callium.app`.
+  - ✅ **Email Routing DONE** on `callium.app` (DNS records Locked). Destination
+    `ghalihyulio12@gmail.com` added + **Verified**; routing rule `call.help@callium.app`
+    → that destination is **Active**; forwarding **tested end-to-end** (inbound email to
+    `call.help@callium.app` arrives in the Gmail inbox). Catch-all rule left Disabled (Drop)
+    by choice. Footer email on the landing is `call.help@callium.app`.
+    - Optional next (not done): enable Gmail "Send mail as" so the user can reply from
+      `call.help@callium.app`, and/or a full mailbox (Zoho free / Workspace).
 
 ### Dev plan (agreed order)
 Per module, build end-to-end before the next: **API spec (contract-first, with a Test
@@ -220,12 +223,12 @@ This file is auto-loaded. State as of this handoff:
 - **Landing/marketing:** `apps/landing/` is LIVE on Cloudflare Pages at
   `cal-lowrisk.pages.dev`, auto-deploying from `main`. Domain `callium.app` bought on
   Cloudflare and attached as a custom domain (may still be finishing SSL).
-- **⏳ UNFINISHED — pick this up first if the user asks about email:** Cloudflare Email
-  Routing is enabled on `callium.app` but has 0 destinations / 0 rules. Finish it:
-  (1) add destination `ghalihyulio12@gmail.com` and have the user click the Gmail verify
-  link; (2) create routing rule `call.help@callium.app` → that destination; (3) test by
-  emailing `call.help@callium.app`. Optional next: enable Gmail "Send mail as" so the user
-  can reply from `call.help@callium.app`, and/or a full mailbox (Zoho free / Workspace).
+- **✅ Email Routing DONE:** Cloudflare Email Routing on `callium.app` is fully set up —
+  destination `ghalihyulio12@gmail.com` Verified, routing rule `call.help@callium.app` →
+  that destination Active, and inbound forwarding tested end-to-end (test email arrived in
+  the Gmail inbox). Catch-all left Disabled (Drop) by choice. Optional next (not done):
+  enable Gmail "Send mail as" to reply from `call.help@callium.app`, and/or a full mailbox
+  (Zoho free / Workspace).
 - **Fonts:** landing title uses **Anton** as a placeholder for **Harse** (not free on
   Google Fonts). When the user supplies a licensed Harse file, self-host via `@font-face`
   and update `--font-display` in `apps/landing/styles/main.css`.
