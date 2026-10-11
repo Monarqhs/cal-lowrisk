@@ -103,7 +103,7 @@ strong { color: var(--ink); }
 
 /* ---------- Hero (asymmetric split) ---------- */
 .hero { padding: var(--space-xl) 0 var(--space-lg); }
-.hero-grid { display: grid; grid-template-columns: minmax(0, 1.05fr) minmax(0, .95fr); gap: var(--space-xl); align-items: center; }
+.hero-grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.05fr); gap: var(--space-xl); align-items: center; }
 .hero-title { font-family: var(--font-display); font-weight: 400; font-size: clamp(2.6rem, 6vw, 5rem); line-height: 1.12; letter-spacing: .01em; text-transform: uppercase; margin: var(--space-xs) 0 var(--space-md); overflow-wrap: anywhere; }
 .hero-title .line { display: block; }
 .hero-title .line + .line { margin-top: .1em; }
@@ -118,7 +118,7 @@ strong { color: var(--ink); }
    straight into the page — no visible frame/box needed. Capped so it sits within the
    hero column's padding and doesn't overpower the copy on wide desktops. */
 .hero-art { margin: 0; display: flex; justify-content: center; }
-.hero-frame { width: 100%; max-width: 580px; border-radius: var(--radius-lg); overflow: hidden; }
+.hero-frame { width: 100%; max-width: 720px; border-radius: var(--radius-lg); overflow: hidden; }
 .hero-illustration { width: 100%; height: auto; display: block; }
 
 /* ---------- Status strip ---------- */
