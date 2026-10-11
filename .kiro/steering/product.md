@@ -176,10 +176,52 @@ every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`
   - **Domain `callium.app`** bought on Cloudflare (~$8.20/yr) → custom domain attached to
     Pages (CNAME `@` → `cal-lowrisk.pages.dev`); was "Initializing" at handoff (SSL
     provisioning, up to ~15 min).
-  - **Email Routing** enabled on `callium.app` (DNS records Locked). ⏳ **In progress /
-    unfinished:** still need to (1) add destination `ghalihyulio12@gmail.com` and VERIFY it
-    via the Gmail link, (2) create routing rule `call.help@callium.app` → that destination,
-    (3) test. Footer email on the landing is `call.help@callium.app`.
+  - ✅ **Email Routing DONE** on `callium.app` (DNS records Locked). Destination
+    `ghalihyulio12@gmail.com` added + **Verified**. Two routing rules **Active**, both
+    forwarding to that Gmail: `call.help@callium.app` (public/support, used in the landing
+    footer) and `yulio.ananda@callium.app` (founder identity, used for Claude Console +
+    program/official comms). Forwarding **tested end-to-end** (inbound email arrives in the
+    Gmail inbox). Catch-all rule left Disabled (Drop) by choice.
+    - Optional next (not done): enable Gmail "Send mail as" so the user can reply from an
+      `@callium.app` address (needs SMTP relay — Zoho free / Resend), and/or a full mailbox.
+  - 🔁 **Claude for Startups — APPLIED TWICE; 1st REJECTED, 2nd pending.** Created a
+    **Claude Console Organization** `Callium` (entity: Small/medium business; Indonesia)
+    under founder email `yulio.ananda@callium.app`. Website `https://callium.app`, founded
+    Oct 2026, positioned as an **educational self-tracking tool, not medical advice**.
+    Skipped buying API credits (org credits $0.00). Answered honestly throughout:
+    early-stage/**bootstrapped, no outside funding** ("Not yet raised"; the "raised outside
+    funding" box is left UNCHECKED and must stay that way — self/parent money without a real
+    documented equity round is NOT "outside funding"; a false claim is unverifiable and
+    backfires).
+    - **1st application → REJECTED** ("we couldn't approve Callium's application this time").
+      Email said the program is for *verified* startups founded in the last 5y or funded in
+      the last 2y; rejections are usually either out-of-window OR **couldn't be verified from
+      the details**. Reapply tips given: **(1) use a work email matching the company domain**,
+      (2) add company website (already done). Likely root cause = **verification**, not
+      eligibility — most probably because the domain was **bought the same day** (too new)
+      and `yulio.ananda@callium.app` is **forwarding-only (Cloudflare Email Routing), not a
+      real mailbox**.
+    - **Contact channels explored and are DEAD ENDS:** the rejection came from a marketing
+      address on `mail.anthropic.com`, which Anthropic's help docs confirm are
+      **outbound-only / unmonitored**; the Console **"Get help" Fin AI agent** has **no
+      knowledge of the Startups program** and can't help. There is no easy human-reconsider
+      path — the intended flow is simply **fix the issues and reapply**.
+    - **2nd application → SUBMITTED, pending review** (same honest data; industry set to
+      "Machine Learning" this time, which is slightly off — Callium is a *consumer*
+      health/fitness app that *uses* AI, not an ML company; "Consumer"/"Health & Fitness"
+      would be more accurate, but industry is optional and not a core verification criterion).
+      ⏳ Decision usually arrives in minutes–3 business days via email to `yulio.ananda@`
+      (forwards to Gmail — watch inbox + spam).
+    - **If rejected again, the real fix (do these before a 3rd try):** (a) let the domain
+      **age** ~1–2 weeks; (b) set up a **real mailbox** on `@callium.app` (e.g. Zoho free or
+      Google Workspace) instead of forwarding-only — NOTE this needs the MX records switched
+      away from Cloudflare Email Routing, which would break the current `call.help@`/
+      `yulio.ananda@`→Gmail forwarding, so decide the trade-off deliberately. Don't rush
+      another reapply while the domain is brand new.
+    - ⚠️ Context: Anthropic **paused** the program's two headline perks ($1,000 API credits
+      + 1 free year of Claude Team) on ~9 Oct 2026 after a demand surge (re-reviewing). So
+      the application is likely queued/under re-review; benefit grant is NOT guaranteed and
+      credits often require institutional funding (which Callium doesn't have).
 
 ### Dev plan (agreed order)
 Per module, build end-to-end before the next: **API spec (contract-first, with a Test
@@ -220,12 +262,20 @@ This file is auto-loaded. State as of this handoff:
 - **Landing/marketing:** `apps/landing/` is LIVE on Cloudflare Pages at
   `cal-lowrisk.pages.dev`, auto-deploying from `main`. Domain `callium.app` bought on
   Cloudflare and attached as a custom domain (may still be finishing SSL).
-- **⏳ UNFINISHED — pick this up first if the user asks about email:** Cloudflare Email
-  Routing is enabled on `callium.app` but has 0 destinations / 0 rules. Finish it:
-  (1) add destination `ghalihyulio12@gmail.com` and have the user click the Gmail verify
-  link; (2) create routing rule `call.help@callium.app` → that destination; (3) test by
-  emailing `call.help@callium.app`. Optional next: enable Gmail "Send mail as" so the user
-  can reply from `call.help@callium.app`, and/or a full mailbox (Zoho free / Workspace).
+- **✅ Email Routing DONE:** Cloudflare Email Routing on `callium.app` fully set up —
+  destination `ghalihyulio12@gmail.com` Verified; two Active rules forwarding to it:
+  `call.help@callium.app` (public/support) and `yulio.ananda@callium.app` (founder); inbound
+  forwarding tested end-to-end. Catch-all left Disabled (Drop). Optional next (not done):
+  Gmail "Send mail as" to reply from an `@callium.app` address, and/or a full mailbox.
+- **🔁 Claude for Startups — 1st REJECTED, 2nd pending:** Claude Console Org `Callium` (SMB,
+  Indonesia) under `yulio.ananda@callium.app`, website `callium.app`, answered honestly as
+  bootstrapped/no funding. 1st app rejected on a **verification** basis (likely: domain bought
+  same day = too new, and the email is **forwarding-only, not a real mailbox**). Contact paths
+  are dead ends (marketing addresses are outbound-only; Console "Get help" Fin doesn't know the
+  program). 2nd app submitted, awaiting review (email to `yulio.ananda@`→Gmail; watch spam).
+  **Before a 3rd try:** let the domain age ~1–2 weeks AND set up a real `@callium.app` mailbox
+  (Zoho/Workspace — breaks the current Cloudflare forwarding; decide the trade-off). Headline
+  perks are paused by Anthropic (~9 Oct 2026), so benefits aren't guaranteed regardless.
 - **Fonts:** landing title uses **Anton** as a placeholder for **Harse** (not free on
   Google Fonts). When the user supplies a licensed Harse file, self-host via `@font-face`
   and update `--font-display` in `apps/landing/styles/main.css`.
