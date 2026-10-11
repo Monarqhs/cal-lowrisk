@@ -1,0 +1,14 @@
+# Cloudflare Pages headers (https://developers.cloudflare.com/pages/configuration/headers/)
+/*
+  X-Content-Type-Options: nosniff
+  X-Frame-Options: DENY
+  Referrer-Policy: strict-origin-when-cross-origin
+  Permissions-Policy: geolocation=(), microphone=(), camera=()
+
+# Long-cache static assets (immutable content, fingerprint later if a build step is added)
+/styles/*
+  Cache-Control: public, max-age=3600
+/scripts/*
+  Cache-Control: public, max-age=3600
+/assets/*
+  Cache-Control: public, max-age=86400
