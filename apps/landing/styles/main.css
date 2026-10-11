@@ -1,5 +1,5 @@
 /* Hallmark · macrostructure: Marquee Hero (asymmetric split) · tone: playful-editorial · anchor hue: warm orange */
-/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 */
+/* Hallmark · pre-emit critique: P4 H4 E4 S4 R4 V4 · cards kept asymmetric (1 lead + 3) to avoid the equal icon-tile grid tell */
 /*
    Callium landing — Notion-adjacent line-art, warm monochrome base, single warm accent.
    Anti-slop pass against nutlope/hallmark: no AI nav, no icon-tile 3/4-col grid, no
@@ -10,13 +10,14 @@
 */
 
 :root {
-  /* Tinted neutrals (never pure black/white) — warmed toward the accent */
-  --paper:      oklch(98.5% 0.008 70);
-  --paper-2:    oklch(96% 0.012 70);
-  --ink:        oklch(22% 0.02 60);
-  --ink-soft:   oklch(44% 0.02 60);
-  --muted:      oklch(60% 0.02 60);
-  --line:       oklch(88% 0.015 70);
+  /* Paper matches the hero illustration's own background (#f4f1ec) so the image
+     blends seamlessly into the page. Neutrals are warm-tinted (never pure b/w). */
+  --paper:      #f4f1ec;
+  --paper-2:    #ece7df;   /* slightly deeper warm panel */
+  --ink:        #2a2521;
+  --ink-soft:   #5c544c;
+  --muted:      #8a8077;
+  --line:       #ddd5c9;
 
   /* Single warm accent + macro hues (macro hues used ONLY as tiny tags, not as fills) */
   --accent:     oklch(68% 0.19 42);     /* #ff6b3d-ish */
@@ -77,8 +78,8 @@ strong { color: var(--ink); }
 .btn-text:hover { color: var(--accent-600); }
 .btn-lg { padding: 16px 30px; font-size: 1.08rem; }
 
-/* ---------- Header (edge-aligned minimal, no hairline AI nav) ---------- */
-.site-header { position: sticky; top: 0; z-index: var(--z-header); background: color-mix(in oklch, var(--paper) 82%, transparent); backdrop-filter: blur(10px); }
+/* ---------- Header (edge-aligned minimal) ---------- */
+.site-header { position: sticky; top: 0; z-index: var(--z-header); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(10px) saturate(1.1); border-bottom: 1px solid var(--line); }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
 .nav-contact { font-weight: 600; color: var(--ink); }
 .nav-contact:hover { color: var(--accent-600); }
@@ -96,10 +97,11 @@ strong { color: var(--ink); }
 .hero-cta { display: flex; flex-wrap: wrap; align-items: center; gap: var(--space-md); margin-top: var(--space-lg); }
 .hero-meta { margin-top: var(--space-md); font-size: .82rem; color: var(--muted); }
 
-/* Hero image: tone-matched to the paper, framed with a soft panel (no re-drawn chrome) */
+/* Hero image: the illustration's own background is #f4f1ec = our --paper, so it blends
+   straight into the page — no visible frame/box needed. */
 .hero-art { margin: 0; }
-.hero-frame { background: var(--paper-2); border-radius: var(--radius-lg); overflow: hidden; aspect-ratio: 16 / 10; display: grid; place-items: center; }
-.hero-illustration { width: 100%; height: 100%; object-fit: cover; mix-blend-mode: multiply; filter: contrast(.95) saturate(.9) sepia(.05); }
+.hero-frame { border-radius: var(--radius-lg); overflow: hidden; display: grid; place-items: center; }
+.hero-illustration { width: 100%; height: auto; display: block; }
 
 /* ---------- Status strip ---------- */
 .status-strip { background: var(--ink); color: var(--paper); }
@@ -114,20 +116,24 @@ section { padding: var(--space-2xl) 0; }
 .section-title { font-family: var(--font-display); font-weight: 400; text-transform: uppercase; letter-spacing: .01em; font-size: clamp(1.9rem, 4vw, 2.9rem); line-height: 1.06; margin: 0 0 var(--space-md); overflow-wrap: anywhere; }
 .section-lead { font-size: 1.08rem; color: var(--ink-soft); max-width: 560px; margin: 0; }
 
-/* Product — asymmetric: lede column + varied feature list (NOT an icon-tile grid) */
-.product-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: var(--space-xl); align-items: start; }
-.product-lede { position: sticky; top: 100px; }
-.feature-list { list-style: none; margin: 0; padding: 0; display: grid; gap: var(--space-lg); }
-.feature { display: grid; grid-template-columns: 46px 1fr; gap: var(--space-md); align-items: start; padding-bottom: var(--space-lg); border-bottom: 1.5px solid var(--line); }
-.feature:last-child { border-bottom: 0; padding-bottom: 0; }
-.feature-lead { grid-column: 1 / -1; }
-.feature-lead h3 { font-size: 1.5rem; }
-.feature h3 { font-family: var(--font-body); font-weight: 700; margin: 0 0 6px; font-size: 1.2rem; }
-.feature p { margin: 0; color: var(--ink-soft); }
+/* Product head */
+.product-head { max-width: 620px; margin-bottom: var(--space-xl); }
+.product-head .section-lead { margin-top: var(--space-sm); }
 
-/* Line-art icons via CSS mask (one stroke voice, inline with heading — not tiles) */
-.line-icon { width: 42px; height: 42px; background: var(--ink); -webkit-mask: var(--m) center/contain no-repeat; mask: var(--m) center/contain no-repeat; }
-.feature-lead .line-icon { width: 46px; height: 46px; background: var(--accent); }
+/* Cards — asymmetric: lead card spans the full top row, three regular below.
+   Icons inline-left (not icon-above tiles), hairline border, one hover signal (lift). */
+.cards { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: var(--space-md); }
+.card { display: flex; gap: var(--space-md); align-items: flex-start; background: var(--paper); border: 1.5px solid var(--line); border-radius: var(--radius-lg); padding: var(--space-lg); transition: transform 160ms var(--ease-out), border-color 160ms var(--ease-out), box-shadow 160ms var(--ease-out); }
+.card:hover { transform: translateY(-4px); border-color: var(--ink); box-shadow: 5px 7px 0 var(--ink); }
+.card-lead { grid-column: 1 / -1; gap: var(--space-lg); border-color: var(--ink); }
+.card-body h3 { font-family: var(--font-body); font-weight: 700; margin: 0 0 6px; font-size: 1.2rem; }
+.card-lead .card-body h3 { font-size: 1.6rem; }
+.card-body p { margin: 0; color: var(--ink-soft); }
+
+/* Line-art icons via CSS mask (one stroke voice, inline-left with heading — not tiles) */
+.line-icon { flex: 0 0 auto; width: 42px; height: 42px; background: var(--ink); -webkit-mask: var(--m) center/contain no-repeat; mask: var(--m) center/contain no-repeat; transition: background-color 160ms var(--ease-out); }
+.card:hover .line-icon { background: var(--accent); }
+.card-lead .line-icon { width: 56px; height: 56px; background: var(--accent); }
 .line-icon-lg { width: 180px; height: 180px; }
 .line-icon[data-ill="balance"] { --m: url("/assets/icons/balance.svg"); }
 .line-icon[data-ill="macros"]  { --m: url("/assets/icons/macros.svg"); }
@@ -170,11 +176,14 @@ section { padding: var(--space-2xl) 0; }
 .footer-legal { margin: 0; color: var(--muted); font-size: .85rem; }
 
 /* ---------- Responsive ---------- */
+@media (max-width: 1024px) {
+  .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
 @media (max-width: 860px) {
   .hero-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
   .hero-art { order: -1; }
-  .product-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
-  .product-lede { position: static; }
+  .cards { grid-template-columns: 1fr; }
+  .card-lead { grid-column: auto; }
   .steps { grid-template-columns: 1fr; }
   .step { border-left: 0; border-top: 1.5px solid var(--line); padding-left: 0; }
   .step:first-child { border-top: 0; }

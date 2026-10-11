@@ -21,9 +21,10 @@ alongside a `@callium` email domain.
 ## Stack
 
 - Plain **HTML + CSS + ES modules**, no build step.
-- **Hero visual:** a static illustration (`assets/hero-illustration.png`) tone-matched to
-  the cream background via CSS (`mix-blend-mode: multiply` + warm filter), so it reads as
-  part of the page rather than a pasted-in white rectangle.
+- **Hero visual:** a static illustration (`assets/hero-illustration.png`). Its own
+  background is `#f4f1ec`, which is the page's `--paper` token — so the image blends into
+  the page with no visible frame. If you swap in an image with a different background,
+  either match `--paper` to it or re-add a frame/blend in `.hero-frame` / `.hero-illustration`.
 - **Line-art icons:** local single-color SVGs in `assets/icons/`, tinted via CSS masks
   (so hover can recolor them to brand orange).
 - `scripts/main.js` adds the footer year + a reduced-motion-aware reveal-on-scroll.
@@ -49,13 +50,12 @@ The hero shows `assets/hero-illustration.png`. Replace that file with your own i
 (keep the filename, or update the `src` in `index.html`). A line-art placeholder
 `hero-illustration.svg` loads automatically if the PNG is missing (via `onerror`).
 
-Tone-matching to the cream background is handled in CSS (`.hero-illustration`):
-`mix-blend-mode: multiply` drops the image's pure-white areas so the background shows
-through, plus a subtle warm filter. If your image has a dark/transparent background instead
-of white, remove the `mix-blend-mode` line.
+The page's `--paper` token is `#f4f1ec` — the current illustration's own background — so
+the image blends in with no visible frame. If your replacement has a different background,
+either update `--paper` to match it, or re-introduce a frame/blend on `.hero-frame` /
+`.hero-illustration` in `main.css`.
 
 > Use an image you have the rights to (your own render, or a free/licensed asset).
-> PNG with a white or transparent background works best; `.webp`/`.svg` are fine too.
 
 ## Run locally
 
