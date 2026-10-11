@@ -21,8 +21,9 @@ alongside a `@callium` email domain.
 ## Stack
 
 - Plain **HTML + CSS + ES modules**, no build step.
-- **Animations:** the official LottieFiles player **`dotlottie-wc`** (web component) via CDN
-  — renders both `.lottie` and `.json`. See `<head>` in `index.html`.
+- **Hero visual:** a static illustration (`assets/hero-illustration.png`) tone-matched to
+  the cream background via CSS (`mix-blend-mode: multiply` + warm filter), so it reads as
+  part of the page rather than a pasted-in white rectangle.
 - **Line-art icons:** local single-color SVGs in `assets/icons/`, tinted via CSS masks
   (so hover can recolor them to brand orange).
 - `scripts/main.js` adds the footer year + a reduced-motion-aware reveal-on-scroll.
@@ -36,25 +37,25 @@ apps/landing/
 ├── scripts/main.js
 ├── assets/
 │   ├── favicon.svg, og-image.svg
-│   ├── icons/        # line-art SVGs (balance, macros, target, bowl, log)
-│   └── lottie/       # (optional) self-hosted .lottie/.json animations
+│   ├── hero-illustration.png   # your hero image (hero-illustration.svg = fallback)
+│   └── icons/        # line-art SVGs (balance, macros, target, bowl, log)
 ├── _headers          # Cloudflare Pages security + cache headers
 └── README.md
 ```
 
-## Swapping the hero animation
+## Swapping the hero illustration
 
-The hero uses a `<dotlottie-wc>` element with a **placeholder** `src`. To use the chosen
-"Healthy Diet" animation (free under the Lottie Simple License):
+The hero shows `assets/hero-illustration.png`. Replace that file with your own image
+(keep the filename, or update the `src` in `index.html`). A line-art placeholder
+`hero-illustration.svg` loads automatically if the PNG is missing (via `onerror`).
 
-- **Option A — hotlink:** on LottieFiles, open the animation → **Asset & Embed** → copy the
-  `.lottie` (or `.json`) URL → paste it into the `src` of `<dotlottie-wc class="hero-lottie">`
-  in `index.html`.
-- **Option B — self-host (preferred for clean licensing):** download the `.lottie`/`.json`
-  into `assets/lottie/` and set `src="/assets/lottie/<file>"`. Add attribution to the author
-  here if the license requires it.
+Tone-matching to the cream background is handled in CSS (`.hero-illustration`):
+`mix-blend-mode: multiply` drops the image's pure-white areas so the background shows
+through, plus a subtle warm filter. If your image has a dark/transparent background instead
+of white, remove the `mix-blend-mode` line.
 
-Both `.lottie` and `.json` work with the same player.
+> Use an image you have the rights to (your own render, or a free/licensed asset).
+> PNG with a white or transparent background works best; `.webp`/`.svg` are fine too.
 
 ## Run locally
 
@@ -85,5 +86,5 @@ Keep DNS on Cloudflare and use **Email Routing** (free) to forward
 ## TODO
 - Swap Anton → **Harse** once the licensed font file is available (self-host via `@font-face`,
   update `--font-title`).
-- Swap the placeholder hero `.lottie` for the chosen "Healthy Diet" animation.
+- Replace `assets/hero-illustration.png` with the final hero image.
 - Replace the SVG `og-image` with a rendered PNG once branding is finalized.

@@ -18,9 +18,6 @@
   <!-- Anton = title (Harse placeholder, high-energy display). Poppins = heading + body. -->
   <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
-
-  <!-- Official LottieFiles player (dotlottie-wc) — renders .lottie and .json, no build step -->
-  <script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js"></script>
 </head>
 <body>
   <a class="skip-link" href="#main">Skip to content</a>
@@ -47,8 +44,8 @@
         <div class="hero-copy">
           <p class="eyebrow">Callium · building in the open</p>
           <h1 class="hero-title">
-            Are you <span class="u-underline">balanced</span><br />
-            against your goal<span class="dot-accent">?</span>
+            <span class="line">Are you <span class="u-underline">balanced</span></span>
+            <span class="line">against your goal<span class="dot-accent">?</span></span>
           </h1>
           <p class="hero-sub">
             Most trackers dump numbers on you. <strong>cal-lowrisk</strong> answers one
@@ -74,17 +71,19 @@
             <circle class="speck" cx="214" cy="36" r="3" />
           </svg>
 
-          <!-- HERO ANIMATION SLOT.
-               PLACEHOLDER .lottie — swap `src` with the "Healthy Diet" animation URL
-               (LottieFiles → Asset & Embed → copy .lottie/.json URL) or drop a file in
-               /assets/lottie/ and point src there. Free under the Lottie Simple License. -->
-          <dotlottie-wc
-            class="hero-lottie"
-            src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie"
-            autoplay loop
-            aria-label="Animated healthy food illustration"
-          ></dotlottie-wc>
-          <noscript><p class="hero-meta">Enable JavaScript to see the animation.</p></noscript>
+          <!-- HERO ILLUSTRATION.
+               Replace assets/hero-illustration.png with your reference image (keep the
+               filename, or update this src). A placeholder SVG loads if the PNG is missing.
+               The .hero-illustration class harmonizes the image tone with the cream
+               background (see main.css). -->
+          <img
+            class="hero-illustration"
+            src="/assets/hero-illustration.png"
+            onerror="this.onerror=null;this.src='/assets/hero-illustration.svg'"
+            alt="A person enjoying a fresh salad at a table — eating in balance"
+            width="1024" height="585"
+            loading="eager" decoding="async"
+          />
         </div>
       </div>
 

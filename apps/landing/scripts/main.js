@@ -1,5 +1,5 @@
 // Page bootstrap: dynamic year + a lightweight reveal-on-scroll for engagement.
-// The hero animation is handled by the <dotlottie-wc> web component (loaded in <head>).
+// The hero uses a static illustration (<img>) harmonized with the background via CSS.
 
 // Footer year
 const yearEl = document.getElementById("year");
