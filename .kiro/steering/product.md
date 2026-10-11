@@ -133,55 +133,103 @@ every change (no direct commits to `main`). Current repo: `Monarqhs/cal-lowrisk`
   Mobile", team "callium project"): all 13 user screens (U1–U15; Home has a ring variant
   and the chosen **Balance Bar** variant on the "Explore" page). Admin (A1–A7) not yet
   designed.
-- 🔧 **Dev (in progress):** scaffold merged to `main` (PR #11). Branch model now in use:
-  `feat/*` → PR → **`uat`** (tests on Neon `cal-lowrisk-uat`) → PR → `main` (prod later).
-  Current working branch: `feat/user-module` (off `uat`).
-  - ✅ `apps/backend/` scaffolded: Gin entry point, shared layer (config, GORM database,
-    response envelope, Base model with UUIDv7 + `Qualify` helper), Makefile, migrations.
-    Builds + vets clean (Go 1.25).
-  - ✅ **Neon connected** (fresh session fixed the flaky enumeration). `apps/backend/.env`
-    written (git-ignored): pooled `DATABASE_URL` + direct `DATABASE_URL_DIRECT` + JWT.
-    Project `cal-lowrisk-uat` = project-id `rough-field-65178844`, branch
-    `br-young-base-b3wfc5ma`, db `neondb`, PG 18, AWS Singapore.
-  - ✅ **`user` migrations RUN on Neon UAT** (via Neon Power `run_sql`) and verified:
-    tables `role`/`users`/`user_profile` + seeded roles (user/admin). Tracking table
-    `"user"."schema_migrations"` at version 4, dirty=false.
-  - ✅ **Schema-per-module applied:** the `user` module now lives in the `"user"` schema
-    (migrated the existing tables out of `public`; files + Makefile updated to schema-
-    qualified, quoted tracking table). This is the standard for all future modules.
-  - ⏭️ **Next:** build the `user` module API (register/login/profile with JWT) on
-    `feat/user-module`, test endpoints (Postman Power), PR to `uat`, then mock mobile.
-  - ⚠️ `golang-migrate` CLI failed to install in-sandbox (Go toolchain version clash) —
-    run migrations via Neon Power `run_sql` (one statement at a time) and keep
-    `"<module>"."schema_migrations"` in sync (set version, dirty=false).
-  - ⚠️ Neon `cal-lowrisk-prod` NOT created yet (deferred to save free-tier CU-hours;
-    create when we first promote `uat` → `main`).
-  - ⚠️ Do NOT run Neon's generic TS deploy flow (`neon config init`/`neon.ts`/`neon deploy`)
-    — it conflicts with golang-migrate owning the schema. We only need the connection string.
+- 🔧 **Dev (in progress):** branch model in use: `feat/*` → PR → **`uat`** (tests on Neon
+  `cal-lowrisk-uat`) → PR → `main`. `main` IS production now (landing is deployed from it).
+  - ✅ `apps/backend/` scaffolded: Gin entry, shared layer (config, GORM database, response
+    envelope, Base model with UUIDv7 + `Qualify`, **`internal/app.NewRouter`**, **`shared/auth`**
+    = bcrypt + HS256 JWT + Gin middleware), Makefile, migrations. Builds + vets clean (Go 1.25).
+  - ✅ **Neon UAT connected.** `apps/backend/.env` (git-ignored): pooled `DATABASE_URL` +
+    direct `DATABASE_URL_DIRECT` + JWT. Project `cal-lowrisk-uat` = project-id
+    `rough-field-65178844`, db `neondb`, PG 18, AWS Singapore. `.env` URLs must be
+    double-quoted (the `&` in the query string breaks `source .env` otherwise).
+  - ✅ **Schema-per-module** applied; `user` module lives in the `"user"` schema; migrations
+    `000001..000004` run & verified on UAT (tracking `"user"."schema_migrations"` v4).
+  - ✅ **`user` module BUILT, TESTED, MERGED** (PR #12→uat, #13 tests→uat, #17 uat→main).
+    Onboarding vertical slice done: `POST /api/v1/auth/register`, `/auth/login` (JWT),
+    `/me/profile` (auth+role; computes Mifflin-St Jeor → TDEE → goal target). Layered
+    controller→service→repository→model+dto per the `add-module` skill. Smoke-tested live
+    on UAT via Postman.
+  - ✅ **Contract-first API specs** at `docs/02-system/api-specs/` (README conventions +
+    `user-service/01. Onboarding User.md` with a numbered Test cases list TC-ON-*).
+  - ✅ **Postman collection** (versioned) at `docs/02-system/api-request/`
+    (`cal-lowrisk.v1.0.0.postman_collection.json` + local/uat environments + CHANGELOG).
+  - ✅ **Test suite** at `apps/backend/tests/` (unit + E2E). E2E auto-skips unless
+    `TEST_DATABASE_URL` is set; run it against a disposable **Neon branch** (create from
+    uat via Neon Power, delete after). All TC-ON-* green. `make test-unit` / `test-e2e`.
+  - ⚠️ `golang-migrate` CLI + `golangci-lint` fail to install in-sandbox (Go toolchain
+    clash). Run migrations via Neon Power `run_sql` (one stmt at a time), keep
+    `"<module>"."schema_migrations"` in sync; rely on `go vet` + `gofmt` for linting.
+  - ⚠️ Neon `cal-lowrisk-prod` NOT created yet (deferred; create at first real prod backend
+    deploy — Render, per deployment.md). UAT branch is the Neon prod-equivalent for now.
+  - ⚠️ Do NOT run Neon's generic TS deploy flow — golang-migrate owns the schema.
+  - ⏭️ **Next backend:** build the `food` module (catalog) end-to-end — spec → service →
+    tests, same pattern. Then `exercise` → `nutrition` → `workout` → `summary`.
+
+- ✅ **Landing page + domain + email (Callium marketing):** done to support a Claude for
+  Startups application.
+  - `apps/landing/` — static site (HTML/CSS/ESM, no build), **Notion-style line-art**,
+    Anton (display, placeholder for **Harse**) + Poppins. Passed an anti-slop pass against
+    the **nutlope/hallmark** rule-set. Assets optimized to WebP (~90 KB total). Hero image
+    + logo are the user's own assets; `--paper` is `#f4f1ec` to match the hero bg.
+  - **Deployed on Cloudflare Pages** (project `cal-lowrisk`, auto-deploy from `main`,
+    output dir `apps/landing`). Live at `cal-lowrisk.pages.dev`.
+  - **Domain `callium.app`** bought on Cloudflare (~$8.20/yr) → custom domain attached to
+    Pages (CNAME `@` → `cal-lowrisk.pages.dev`); was "Initializing" at handoff (SSL
+    provisioning, up to ~15 min).
+  - **Email Routing** enabled on `callium.app` (DNS records Locked). ⏳ **In progress /
+    unfinished:** still need to (1) add destination `ghalihyulio12@gmail.com` and VERIFY it
+    via the Gmail link, (2) create routing rule `call.help@callium.app` → that destination,
+    (3) test. Footer email on the landing is `call.help@callium.app`.
 
 ### Dev plan (agreed order)
-master-table migrations → backend API (per module, start with `user` vertical slice) →
-test endpoints → mock mobile in Flutter. Build one module end-to-end before the next.
+Per module, build end-to-end before the next: **API spec (contract-first, with a Test
+cases list) → migrations (Neon) → service (controller→service→repository→model+dto) →
+Postman collection entry → unit + E2E tests (E2E on a disposable Neon branch) → PR to
+`uat` → promote `uat`→`main`.** Order: `user` ✅ → `food` → `exercise` → `nutrition` →
+`workout` → `summary`. Then mock the mobile app in Flutter (Figma → Flutter).
+
+### Team / communication preferences (saved as global learnings too)
+- Converse with the user in **Bahasa Indonesia**; keep everything written to the repo
+  (code, docs, commits, PR titles/bodies, branch names, comments) in **English**.
+- DB: native `uuid` PKs, app-generated **UUIDv7** (see erd.md §2).
+- Testing: contract-first; specs are source of truth; tests live centralized under
+  `apps/backend/tests/` (unit + E2E); E2E uses a disposable Neon branch.
 
 ## Pointers
 - Full requirements: `docs/01-business/brd.md`
 - Data model: `docs/02-system/erd.md` · Architecture: `docs/02-system/architecture.md` ·
   Environments/deploy: `docs/02-system/deployment.md`
+- **API specs (contract-first, source of truth):** `docs/02-system/api-specs/`
+- **Postman collection (versioned):** `docs/02-system/api-request/`
 - UX flows + screen inventory + visual tokens: `docs/03-ux/user-flows.md`
 - Documentation index: `docs/README.md`
 - How to add a module (code + migrations): skill `add-module`
-- Backend code + how-to: `apps/backend/` (+ its README)
+- Backend code + how-to: `apps/backend/` (+ its README) · tests: `apps/backend/tests/`
+- **Landing site:** `apps/landing/` (static; Cloudflare Pages → `cal-lowrisk.pages.dev` →
+  `callium.app`) (+ its README)
 - Figma (mobile): file "cal-lowrisk — Mobile" in team "callium project" (via Figma Power)
 - Powers connected: Figma (design-to-code), Neon (DB), Postman (API testing)
+- Hosting: Cloudflare (Pages for landing + Registrar for `callium.app` + Email Routing)
 
 ## For a new session (handover)
-This file is auto-loaded. Dev is on branch `feat/user-module` (off `uat`). Neon
-`cal-lowrisk-uat` (project-id `rough-field-65178844`) is connected, `apps/backend/.env`
-holds the pooled+direct strings, and the `user` migrations are already run & verified in
-the `"user"` schema (schema-per-module). **Next concrete step:** build the `user` module
-API (register/login/profile + JWT) following the `add-module` skill, test with the Postman
-Power, then PR `feat/user-module` → `uat`. If Neon tools stop enumerating, start a fresh
-session (that fixed it last time) or ask the user to paste connection strings from the
-Neon dashboard. `cal-lowrisk-prod` is not created yet — do that at first `uat`→`main` promote.
+This file is auto-loaded. State as of this handoff:
+- **Backend:** `user` module (onboarding) is built, tested, and merged to `main`. Neon
+  `cal-lowrisk-uat` (project-id `rough-field-65178844`) connected; `apps/backend/.env`
+  holds the (double-quoted) pooled+direct URLs + JWT. **Next:** the `food` module,
+  end-to-end, following the Dev plan above and the `add-module` skill.
+- **Landing/marketing:** `apps/landing/` is LIVE on Cloudflare Pages at
+  `cal-lowrisk.pages.dev`, auto-deploying from `main`. Domain `callium.app` bought on
+  Cloudflare and attached as a custom domain (may still be finishing SSL).
+- **⏳ UNFINISHED — pick this up first if the user asks about email:** Cloudflare Email
+  Routing is enabled on `callium.app` but has 0 destinations / 0 rules. Finish it:
+  (1) add destination `ghalihyulio12@gmail.com` and have the user click the Gmail verify
+  link; (2) create routing rule `call.help@callium.app` → that destination; (3) test by
+  emailing `call.help@callium.app`. Optional next: enable Gmail "Send mail as" so the user
+  can reply from `call.help@callium.app`, and/or a full mailbox (Zoho free / Workspace).
+- **Fonts:** landing title uses **Anton** as a placeholder for **Harse** (not free on
+  Google Fonts). When the user supplies a licensed Harse file, self-host via `@font-face`
+  and update `--font-display` in `apps/landing/styles/main.css`.
+- If Neon Power tools stop enumerating, starting a fresh session fixed it before.
+  `cal-lowrisk-prod` (Neon) still not created — do that at first real backend deploy (Render).
 
 #[[file:docs/01-business/brd.md]]
