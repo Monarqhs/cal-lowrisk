@@ -93,10 +93,24 @@ italic headers. Colours are OKLCH tokens (tinted neutrals, one warm accent); mot
 single CSS hero entrance; punctuation uses em-dashes and curly quotes. The CSS top carries
 the Hallmark macrostructure stamp + a pre-emit self-critique.
 
+## Assets (optimized)
+
+All raster assets are compressed WebP/PNG, sized for how they're actually displayed:
+
+| File | Use | Size |
+|---|---|---|
+| `hero-illustration.webp` | hero (shown ≤720px, 1440px for retina) | ~46 KB |
+| `hero-illustration.svg` | line-art fallback if the webp fails | ~1 KB |
+| `Cal-Logo-2.webp` | navbar wordmark (16:9, CSS-cropped) | ~6 KB |
+| `Cal-Logo.webp` | square 1:1 logo (spare, for future use) | ~6 KB |
+| `favicon-32.png` / `favicon-180.png` | tab icon / apple-touch icon | ~1 / 28 KB |
+| `og-image.svg` | social share card | ~1 KB |
+
+The heavy source files (multi-MB JPEGs the logos/hero were exported as) were replaced by
+these. To regenerate from new sources, resize + re-encode with Pillow/`cwebp` to similar
+dimensions.
+
 ## TODO
 - Swap Anton → **Harse** once the licensed font file is available (self-host via `@font-face`,
   update `--font-display`).
-- **Re-export the hero image as real PNG/WebP.** `assets/hero-illustration.png` is currently
-  a JPEG (2752×1536, ~1.9 MB) with a `.png` name. Browsers render it, but for correctness +
-  LCP, export a compressed `.webp` (or true `.png`) ≤ ~300 KB and update the `src`.
 - Replace the SVG `og-image` with a rendered PNG once branding is finalized.
