@@ -1,21 +1,31 @@
 # Callium — Landing Page
 
 Marketing/landing site for **Callium** (the team/company) and its flagship product in
-development, **cal-lowrisk**. Built as a lightweight static site with a **Three.js** hero
-"balance" scene. Intended to support the Claude for Startups application alongside a
-`@callium` email domain.
+development, **cal-lowrisk**. Built to support the Claude for Startups application
+alongside a `@callium` email domain.
 
-> cal-lowrisk is in active **R&D** — the page states this clearly. It is a product preview,
+> cal-lowrisk is in active **R&D** — the page states this clearly. It's a product preview,
 > not a live app.
+
+## Look & feel
+
+- **Notion-style line-art**, monochrome base (near-black ink on warm off-white) with brand
+  color as accent only.
+- **Fonts:** **Anton** for titles/display (a free placeholder for **Harse** — swap later via
+  the `--font-title` CSS variable), **Poppins** for headings + body.
+- Brand accents from `docs/03-ux/user-flows.md` §11: orange `#FF6B3D`; macros protein=blue,
+  carbs=green, fat=amber.
+- Logo is a **wordmark** ("Callium" in the title typeface) — placeholder until an official
+  logo exists.
 
 ## Stack
 
-- Plain **HTML + CSS + ES modules** — no build step required.
-- **Three.js** loaded via an ESM CDN import map (see `index.html`). The hero scene is
-  lazy-loaded and degrades gracefully (no WebGL / load failure / `prefers-reduced-motion`
-  → the page works fully without 3D).
-- Visual tokens from `docs/03-ux/user-flows.md` §11: Inter, primary orange `#FF6B3D`,
-  macro colors (protein=blue, carbs=green, fat=amber), warm/clean/calm.
+- Plain **HTML + CSS + ES modules**, no build step.
+- **Animations:** the official LottieFiles player **`dotlottie-wc`** (web component) via CDN
+  — renders both `.lottie` and `.json`. See `<head>` in `index.html`.
+- **Line-art icons:** local single-color SVGs in `assets/icons/`, tinted via CSS masks
+  (so hover can recolor them to brand orange).
+- `scripts/main.js` adds the footer year + a reduced-motion-aware reveal-on-scroll.
 
 ## Structure
 
@@ -23,58 +33,57 @@ development, **cal-lowrisk**. Built as a lightweight static site with a **Three.
 apps/landing/
 ├── index.html
 ├── styles/main.css
-├── scripts/
-│   ├── main.js          # year, WebGL detection, lazy-init of the hero scene
-│   └── hero-scene.js    # Three.js balance scene (ES module)
-├── assets/              # favicon.svg, og-image.svg
-├── _headers             # Cloudflare Pages security + cache headers
+├── scripts/main.js
+├── assets/
+│   ├── favicon.svg, og-image.svg
+│   ├── icons/        # line-art SVGs (balance, macros, target, bowl, log)
+│   └── lottie/       # (optional) self-hosted .lottie/.json animations
+├── _headers          # Cloudflare Pages security + cache headers
 └── README.md
 ```
 
+## Swapping the hero animation
+
+The hero uses a `<dotlottie-wc>` element with a **placeholder** `src`. To use the chosen
+"Healthy Diet" animation (free under the Lottie Simple License):
+
+- **Option A — hotlink:** on LottieFiles, open the animation → **Asset & Embed** → copy the
+  `.lottie` (or `.json`) URL → paste it into the `src` of `<dotlottie-wc class="hero-lottie">`
+  in `index.html`.
+- **Option B — self-host (preferred for clean licensing):** download the `.lottie`/`.json`
+  into `assets/lottie/` and set `src="/assets/lottie/<file>"`. Add attribution to the author
+  here if the license requires it.
+
+Both `.lottie` and `.json` work with the same player.
+
 ## Run locally
 
-No build needed — serve the folder over HTTP (ES modules + import maps need http://, not file://):
+ES modules + the web component need `http://` (not `file://`):
 
 ```bash
 cd apps/landing
-python3 -m http.server 5173
+python3 -m http.server 5173       # or: npx serve -l 5173
 # open http://localhost:5173
 ```
 
-(Any static server works: `npx serve`, `php -S`, etc.)
-
 ## Deploy to Cloudflare Pages
 
-1. Push this repo (branch `uat`/`main`).
-2. Cloudflare dashboard → **Workers & Pages → Create → Pages → Connect to Git** → select
-   `Monarqhs/cal-lowrisk`.
-3. Build settings:
-   - **Framework preset:** None
-   - **Build command:** *(leave empty — static site)*
-   - **Build output directory:** `apps/landing`
-   - **Root directory:** *(repo root)*
-4. Deploy. Cloudflare gives a `*.pages.dev` URL immediately.
+1. Push the repo (`uat`/`main`).
+2. Cloudflare → **Workers & Pages → Create → Pages → Connect to Git** → `Monarqhs/cal-lowrisk`.
+3. Build settings: **Framework preset:** None · **Build command:** *(empty)* ·
+   **Build output directory:** `apps/landing` · **Root directory:** *(repo root)*.
+4. Deploy → a `*.pages.dev` URL. HTTPS is automatic.
 
-### Connect the custom domain (callium.app / callium.com)
+### Custom domain (callium.app / callium.com)
+Pages project → **Custom domains → Set up a custom domain** → add `callium.app` (+ `www`).
+If DNS is on Cloudflare, records are added automatically; HTTPS is automatic.
 
-1. Register the domain (Cloudflare Registrar is cheapest at cost; `.app` requires HTTPS,
-   which Cloudflare provides automatically).
-2. Pages project → **Custom domains → Set up a custom domain** → enter `callium.app`
-   (and `www`). If the domain is on Cloudflare DNS, records are added automatically.
-3. HTTPS is automatic. Done.
+### Email (`@callium`)
+Keep DNS on Cloudflare and use **Email Routing** (free) to forward
+`call.help@callium.app` to a personal inbox. Full mailbox (Google Workspace / Zoho) later.
 
-> `.app` vs `.com`: `.app` reads modern/techy and forces HTTPS; `.com` is the most
-> universally trusted. The page is domain-agnostic — the email `call.help@callium.app`
-> in the footer is the only hard-coded reference; update it if you choose `.com`.
-
-## Email domain (`@callium`)
-
-Buying the domain enables `call.help@callium.app`. Cheapest path: keep DNS on Cloudflare
-and use **Cloudflare Email Routing** (free) to forward `call.help@callium.app` to a
-personal inbox — enough to send/receive for the application. A full mailbox (Google
-Workspace / Zoho) can come later.
-
-## TODO / revisit
-- Replace the SVG `og-image` with a rendered PNG once the brand is finalized.
-- Revise the Three.js scene per feedback (first pass implements the agreed "balance" idea).
-- Consider migrating to the planned Next.js app if the landing grows beyond a single page.
+## TODO
+- Swap Anton → **Harse** once the licensed font file is available (self-host via `@font-face`,
+  update `--font-title`).
+- Swap the placeholder hero `.lottie` for the chosen "Healthy Diet" animation.
+- Replace the SVG `og-image` with a rendered PNG once branding is finalized.

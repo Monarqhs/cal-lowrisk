@@ -1,51 +1,29 @@
-// Page bootstrap: dynamic year, and lazy-init the Three.js hero scene with graceful
-// fallback (no WebGL / load failure / reduced motion -> the page still works fully).
+// Page bootstrap: dynamic year + a lightweight reveal-on-scroll for engagement.
+// The hero animation is handled by the <dotlottie-wc> web component (loaded in <head>).
 
-// Current year in the footer.
+// Footer year
 const yearEl = document.getElementById("year");
 if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-// Detect WebGL support before loading Three.js (avoids shipping the lib if unusable).
-function hasWebGL() {
-  try {
-    const c = document.createElement("canvas");
-    return !!(window.WebGLRenderingContext && (c.getContext("webgl") || c.getContext("experimental-webgl")));
-  } catch (_) {
-    return false;
-  }
-}
+// Reveal-on-scroll: fade/slide elements in as they enter the viewport.
+// Respects reduced-motion (we simply show everything, no animation).
+const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+const revealTargets = document.querySelectorAll(".card, .step, .section-title, .section-lead, .team-points li");
 
-const canvas = document.getElementById("hero-canvas");
-const note = document.getElementById("webgl-note");
-
-function showFallbackNote() {
-  if (note) note.hidden = false;
-  if (canvas) canvas.style.display = "none";
-}
-
-if (canvas && hasWebGL()) {
-  // Only load the 3D scene when the hero is near the viewport (it is, at top — so this
-  // mostly guards against wasted work if the markup ever changes).
-  const start = () => {
-    import("./hero-scene.js")
-      .then((m) => m.initHeroScene(canvas))
-      .catch((err) => {
-        console.warn("Hero 3D scene failed to load:", err);
-        showFallbackNote();
-      });
-  };
-
-  if ("IntersectionObserver" in window) {
-    const io = new IntersectionObserver((entries, obs) => {
-      if (entries.some((e) => e.isIntersecting)) {
-        obs.disconnect();
-        start();
-      }
-    });
-    io.observe(canvas);
-  } else {
-    start();
-  }
+if (reduceMotion || !("IntersectionObserver" in window)) {
+  revealTargets.forEach((el) => el.classList.add("is-in"));
 } else {
-  showFallbackNote();
+  revealTargets.forEach((el) => el.classList.add("reveal"));
+  const io = new IntersectionObserver(
+    (entries, obs) => {
+      entries.forEach((e) => {
+        if (e.isIntersecting) {
+          e.target.classList.add("is-in");
+          obs.unobserve(e.target);
+        }
+      });
+    },
+    { threshold: 0.12, rootMargin: "0px 0px -40px 0px" }
+  );
+  revealTargets.forEach((el) => io.observe(el));
 }

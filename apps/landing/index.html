@@ -6,7 +6,6 @@
   <title>Callium — building cal-lowrisk, a smarter health balance tracker</title>
   <meta name="description" content="Callium is building cal-lowrisk: a health tracker that tells you, at a glance, whether your food and activity are balanced against your goal — calories in vs out, with a macro breakdown." />
 
-  <!-- Open Graph / social -->
   <meta property="og:type" content="website" />
   <meta property="og:title" content="Callium — cal-lowrisk" />
   <meta property="og:description" content="Know, at a glance, if your day is balanced against your goal. Calories in vs out, macros, personalized targets." />
@@ -16,107 +15,115 @@
   <link rel="icon" href="/assets/favicon.svg" type="image/svg+xml" />
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <!-- Anton = title (Harse placeholder, high-energy display). Poppins = heading + body. -->
+  <link href="https://fonts.googleapis.com/css2?family=Anton&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet" />
   <link rel="stylesheet" href="/styles/main.css" />
 
-  <!-- Three.js via ESM CDN (import map) — no build step needed -->
-  <script type="importmap">
-  {
-    "imports": {
-      "three": "https://unpkg.com/three@0.160.0/build/three.module.js"
-    }
-  }
-  </script>
+  <!-- Official LottieFiles player (dotlottie-wc) — renders .lottie and .json, no build step -->
+  <script type="module" src="https://unpkg.com/@lottiefiles/dotlottie-wc@latest/dist/dotlottie-wc.js"></script>
 </head>
 <body>
-  <!-- Skip link for a11y -->
   <a class="skip-link" href="#main">Skip to content</a>
 
   <header class="site-header" id="top">
     <nav class="nav container" aria-label="Primary">
       <a class="brand" href="#top" aria-label="Callium home">
-        <span class="brand-mark" aria-hidden="true"></span>
+        <!-- Wordmark logo (no official logo yet): Callium in the title typeface -->
         <span class="brand-name">Callium</span>
       </a>
       <div class="nav-links">
         <a href="#product">Product</a>
         <a href="#how">How it works</a>
-        <a href="#status">Status</a>
-        <a class="btn btn-ghost" href="#contact">Contact</a>
+        <a href="#team">Team</a>
+        <a class="btn btn-dark" href="#contact">Contact</a>
       </div>
     </nav>
   </header>
 
   <main id="main">
-    <!-- HERO with Three.js balance scene -->
-    <section class="hero" id="hero">
-      <canvas id="hero-canvas" class="hero-canvas" aria-hidden="true"></canvas>
-      <div class="hero-inner container">
-        <p class="eyebrow">
-          <span class="dot" aria-hidden="true"></span>
-          Callium · building in the open
-        </p>
-        <h1 class="hero-title">
-          Are you <span class="accent">balanced</span><br />against your goal today?
-        </h1>
-        <p class="hero-sub">
-          Most trackers dump numbers on you. <strong>cal-lowrisk</strong> answers one
-          question first — is your day balanced, in deficit, or surplus — then shows the
-          macros behind it.
-        </p>
-        <div class="hero-cta">
-          <a class="btn btn-primary" href="#contact">Get early access</a>
-          <a class="btn btn-ghost" href="#how">See how it works</a>
+    <!-- HERO -->
+    <section class="hero">
+      <div class="hero-grid container">
+        <div class="hero-copy">
+          <p class="eyebrow">Callium · building in the open</p>
+          <h1 class="hero-title">
+            Are you <span class="u-underline">balanced</span><br />
+            against your goal<span class="dot-accent">?</span>
+          </h1>
+          <p class="hero-sub">
+            Most trackers dump numbers on you. <strong>cal-lowrisk</strong> answers one
+            question first — is your day in <em>deficit</em>, <em>balanced</em>, or
+            <em>surplus</em> — then shows the macros behind it.
+          </p>
+          <div class="hero-cta">
+            <a class="btn btn-primary" href="#contact">Get early access</a>
+            <a class="btn btn-outline" href="#how">See how it works</a>
+          </div>
+          <p class="hero-meta">A Callium product · in active development</p>
         </div>
-        <p class="hero-note" id="webgl-note" hidden>
-          Your browser skipped the 3D scene — the page works fine without it.
-        </p>
+
+        <div class="hero-art">
+          <!-- Decorative hand-drawn orbit rings (Notion line-art vibe) -->
+          <svg class="orbit-rings" viewBox="0 0 420 420" aria-hidden="true">
+            <circle class="ring ring-1" cx="210" cy="210" r="150" />
+            <circle class="ring ring-2" cx="210" cy="210" r="196" />
+            <path class="sprout" d="M86 150 q-18 -22 -4 -44 q22 10 4 44 Z" />
+            <path class="sprout" d="M350 300 q20 -20 44 -8 q-10 24 -44 8 Z" />
+            <circle class="speck" cx="60" cy="300" r="4" />
+            <circle class="speck" cx="364" cy="120" r="5" />
+            <circle class="speck" cx="214" cy="36" r="3" />
+          </svg>
+
+          <!-- HERO ANIMATION SLOT.
+               PLACEHOLDER .lottie — swap `src` with the "Healthy Diet" animation URL
+               (LottieFiles → Asset & Embed → copy .lottie/.json URL) or drop a file in
+               /assets/lottie/ and point src there. Free under the Lottie Simple License. -->
+          <dotlottie-wc
+            class="hero-lottie"
+            src="https://lottie.host/4db68bbd-31f6-4cd8-84eb-189de081159a/IGmMCqhzpt.lottie"
+            autoplay loop
+            aria-label="Animated healthy food illustration"
+          ></dotlottie-wc>
+          <noscript><p class="hero-meta">Enable JavaScript to see the animation.</p></noscript>
+        </div>
       </div>
-      <div class="hero-scroll" aria-hidden="true">
-        <span>scroll</span>
-        <span class="hero-scroll-line"></span>
-      </div>
+
+      <div class="hero-scroll" aria-hidden="true"><span>scroll</span></div>
     </section>
 
-    <!-- STATUS banner — honest R&D note -->
+    <!-- STATUS strip -->
     <section class="status-strip" id="status">
       <div class="container status-strip-inner">
         <span class="pill pill-rnd">R&amp;D</span>
-        <p>
-          <strong>cal-lowrisk is in active development.</strong>
-          We're building the backend, mobile app, and admin tooling now. This page is a
-          preview of the product and the team behind it — not a live app (yet).
-        </p>
+        <p><strong>cal-lowrisk is in active development.</strong> We're building the backend, mobile app, and admin tooling now — this page previews the product and the team, not a live app (yet).</p>
       </div>
     </section>
 
-    <!-- PRODUCT / value props -->
+    <!-- PRODUCT -->
     <section class="product" id="product">
       <div class="container">
+        <p class="eyebrow eyebrow-dark">The product</p>
         <h2 class="section-title">One question, answered clearly.</h2>
-        <p class="section-lead">
-          cal-lowrisk combines a calorie tracker and a workout tracker into a single,
-          goal-aware picture of your day, week, and month.
-        </p>
+        <p class="section-lead">cal-lowrisk combines a calorie tracker and a workout tracker into a single, goal-aware picture of your day, week, and month.</p>
 
         <div class="cards">
           <article class="card">
-            <div class="card-icon" data-macro="balance" aria-hidden="true"></div>
+            <div class="line-icon" data-ill="balance"></div>
             <h3>Balance at a glance</h3>
             <p>Calories in vs. out vs. your personalized target — one hero number, with a clear deficit / balanced / surplus status.</p>
           </article>
           <article class="card">
-            <div class="card-icon" data-macro="macros" aria-hidden="true"></div>
+            <div class="line-icon" data-ill="macros"></div>
             <h3>Macros that make sense</h3>
-            <p>Protein, carbs, and fat broken out and color-coded, so you see <em>what</em> made up the day, not just the total.</p>
+            <p>Protein, carbs, and fat broken out and color-coded — see <em>what</em> made up the day, not just the total.</p>
           </article>
           <article class="card">
-            <div class="card-icon" data-macro="target" aria-hidden="true"></div>
+            <div class="line-icon" data-ill="target"></div>
             <h3>A target built for you</h3>
             <p>We compute your daily goal from your body data (Mifflin-St Jeor → TDEE), then adjust for lose / maintain / gain.</p>
           </article>
           <article class="card">
-            <div class="card-icon" data-macro="local" aria-hidden="true"></div>
+            <div class="line-icon" data-ill="local"></div>
             <h3>Local-first food</h3>
             <p>A catalog oriented toward Indonesian meals and household serving sizes — logging feels native, not translated.</p>
           </article>
@@ -124,62 +131,61 @@
       </div>
     </section>
 
-    <!-- HOW IT WORKS -->
+    <!-- HOW -->
     <section class="how" id="how">
       <div class="container">
+        <p class="eyebrow eyebrow-dark">How it works</p>
         <h2 class="section-title">Three steps. That's the whole loop.</h2>
         <ol class="steps">
           <li class="step">
-            <span class="step-num">1</span>
+            <span class="step-num">01</span>
+            <div class="line-icon line-icon-sm" data-ill="goal"></div>
             <h3>Set your goal</h3>
-            <p>Pick lose, maintain, or gain. Add weight, height, age, sex, and activity — we do the math.</p>
+            <p>Pick lose, maintain, or gain. Add weight, height, age, sex, activity — we do the math.</p>
           </li>
           <li class="step">
-            <span class="step-num">2</span>
+            <span class="step-num">02</span>
+            <div class="line-icon line-icon-sm" data-ill="log"></div>
             <h3>Log meals &amp; workouts</h3>
-            <p>A few taps per entry. Catalog foods, custom foods, and workouts with calorie-burn estimates.</p>
+            <p>A few taps per entry. Catalog foods, custom foods, and workouts with burn estimates.</p>
           </li>
           <li class="step">
-            <span class="step-num">3</span>
+            <span class="step-num">03</span>
+            <div class="line-icon line-icon-sm" data-ill="balance"></div>
             <h3>See your balance</h3>
-            <p>Daily, weekly, and monthly — net calories against your target, with the macro story behind it.</p>
+            <p>Daily, weekly, monthly — net calories vs. your target, with the macro story behind it.</p>
           </li>
         </ol>
       </div>
     </section>
 
-    <!-- TEAM / Callium -->
+    <!-- TEAM -->
     <section class="team" id="team">
       <div class="container team-inner">
         <div>
+          <p class="eyebrow eyebrow-dark">The team</p>
           <h2 class="section-title">Callium</h2>
-          <p class="section-lead">
-            Callium is a small team building practical, privacy-respecting health tools.
-            <strong>cal-lowrisk</strong> is our first product — a modern, enterprise-grade
-            stack built end to end: Go backend, Flutter app, Next.js admin, on PostgreSQL.
-          </p>
+          <p class="section-lead">Callium is a small team building practical, privacy-respecting health tools. <strong>cal-lowrisk</strong> is our first product — a modern, enterprise-grade stack built end to end: Go backend, Flutter app, Next.js admin, on PostgreSQL.</p>
           <ul class="team-points">
-            <li><span aria-hidden="true">◆</span> Privacy by design — your logs are yours; admins only ever see aggregates.</li>
-            <li><span aria-hidden="true">◆</span> Built in the open, documented as we go.</li>
-            <li><span aria-hidden="true">◆</span> Not medical advice — a self-tracking tool, by design.</li>
+            <li><span class="tick" aria-hidden="true"></span> Privacy by design — your logs are yours; admins only ever see aggregates.</li>
+            <li><span class="tick" aria-hidden="true"></span> Built in the open, documented as we go.</li>
+            <li><span class="tick" aria-hidden="true"></span> Not medical advice — a self-tracking tool, by design.</li>
           </ul>
         </div>
-        <div class="team-badge" aria-hidden="true">
-          <div class="orbit">
-            <span class="orbit-core">Callium</span>
-            <span class="orbit-chip chip-protein">protein</span>
-            <span class="orbit-chip chip-carbs">carbs</span>
-            <span class="orbit-chip chip-fat">fat</span>
-          </div>
+        <div class="team-art" aria-hidden="true">
+          <div class="line-icon line-icon-lg" data-ill="bowl"></div>
+          <span class="tag tag-protein">protein</span>
+          <span class="tag tag-carbs">carbs</span>
+          <span class="tag tag-fat">fat</span>
         </div>
       </div>
     </section>
 
-    <!-- CONTACT / CTA -->
+    <!-- CONTACT -->
     <section class="contact" id="contact">
       <div class="container contact-inner">
-        <h2 class="section-title">Want early access or to partner with us?</h2>
-        <p class="section-lead">We'd love to hear from you — testers, collaborators, and the curious welcome.</p>
+        <h2 class="section-title contact-title">Want early access or to partner with us?</h2>
+        <p class="section-lead">Testers, collaborators, and the curious welcome.</p>
         <a class="btn btn-primary btn-lg" href="mailto:call.help@callium.app?subject=Interested%20in%20cal-lowrisk">Email the team</a>
       </div>
     </section>
@@ -187,20 +193,14 @@
 
   <footer class="site-footer">
     <div class="container footer-inner">
-      <div class="footer-brand">
-        <span class="brand-mark" aria-hidden="true"></span>
-        <span class="brand-name">Callium</span>
-      </div>
+      <span class="brand-name footer-mark">Callium</span>
       <nav class="footer-links" aria-label="Footer">
         <a href="#product">Product</a>
         <a href="#how">How it works</a>
         <a href="#team">Team</a>
         <a href="mailto:call.help@callium.app">call.help@callium.app</a>
       </nav>
-      <p class="footer-legal">
-        © <span id="year">2026</span> Callium. cal-lowrisk is in active development ·
-        a self-tracking tool, not medical advice.
-      </p>
+      <p class="footer-legal">© <span id="year">2026</span> Callium. cal-lowrisk is in active development · a self-tracking tool, not medical advice.</p>
     </div>
   </footer>
 
