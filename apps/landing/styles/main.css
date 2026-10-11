@@ -81,6 +81,9 @@ strong { color: var(--ink); }
 /* ---------- Header (edge-aligned minimal) ---------- */
 .site-header { position: sticky; top: 0; z-index: var(--z-header); background: color-mix(in srgb, var(--paper) 90%, transparent); backdrop-filter: blur(10px) saturate(1.1); border-bottom: 1px solid var(--line); }
 .nav { display: flex; align-items: center; justify-content: space-between; height: 72px; }
+.nav-links { display: flex; align-items: center; gap: var(--space-lg); }
+.nav-links a { font-weight: 500; color: var(--ink-soft); font-size: .95rem; }
+.nav-links a:hover { color: var(--accent-600); }
 .nav-contact { font-weight: 600; color: var(--ink); }
 .nav-contact:hover { color: var(--accent-600); }
 
@@ -98,9 +101,10 @@ strong { color: var(--ink); }
 .hero-meta { margin-top: var(--space-md); font-size: .82rem; color: var(--muted); }
 
 /* Hero image: the illustration's own background is #f4f1ec = our --paper, so it blends
-   straight into the page — no visible frame/box needed. */
-.hero-art { margin: 0; }
-.hero-frame { border-radius: var(--radius-lg); overflow: hidden; display: grid; place-items: center; }
+   straight into the page — no visible frame/box needed. Capped so it sits within the
+   hero column's padding and doesn't overpower the copy on wide desktops. */
+.hero-art { margin: 0; display: flex; justify-content: center; }
+.hero-frame { width: 100%; max-width: 460px; border-radius: var(--radius-lg); overflow: hidden; }
 .hero-illustration { width: 100%; height: auto; display: block; }
 
 /* ---------- Status strip ---------- */
@@ -180,16 +184,35 @@ section { padding: var(--space-2xl) 0; }
   .cards { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 @media (max-width: 860px) {
-  .hero-grid { grid-template-columns: 1fr; gap: var(--space-lg); }
+  /* On small screens keep just the brand + Contact (no cramped link row / wrap). */
+  .nav-links a:not(.nav-contact) { display: none; }
+
+  .hero { padding: var(--space-lg) 0 var(--space-md); }
+  .hero-grid { grid-template-columns: 1fr; gap: var(--space-md); }
   .hero-art { order: -1; }
+  .hero-frame { max-width: 320px; }
+  .hero-sub { max-width: none; }
+  .hero-cta { gap: var(--space-sm) var(--space-md); margin-top: var(--space-md); }
+
   .cards { grid-template-columns: 1fr; }
   .card-lead { grid-column: auto; }
+  .card-lead .card-body h3 { font-size: 1.35rem; }
   .steps { grid-template-columns: 1fr; }
-  .step { border-left: 0; border-top: 1.5px solid var(--line); padding-left: 0; }
-  .step:first-child { border-top: 0; }
+  .step { border-left: 0; border-top: 1.5px solid var(--line); padding-left: 0; padding-block: var(--space-md); }
+  .step:first-child { border-top: 0; padding-top: 0; }
   .team-inner { grid-template-columns: 1fr; }
   .team-art { order: -1; }
+
   section { padding: var(--space-xl) 0; }
+  .product-head { margin-bottom: var(--space-lg); }
+}
+
+@media (max-width: 480px) {
+  .container { padding: 0 20px; }
+  .hero-title { font-size: clamp(2.3rem, 11vw, 3rem); }
+  .btn { width: 100%; justify-content: center; }
+  .btn-text { width: auto; }
+  .hero-cta { flex-direction: column; align-items: stretch; }
 }
 
 /* ---------- Motion: ONE orchestrated entrance (hero), nothing else fades ---------- */
